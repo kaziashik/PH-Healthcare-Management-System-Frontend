@@ -1,37 +1,47 @@
-"use client"
+"use client";
 
+import { usePathname, useRouter } from "next/navigation";
+import { type ReactNode, useEffect } from "react";
 import { useGetMe } from "@/hooks/auth.hook";
-import { useRouter } from "next/navigation";
-
-import { ReactNode, useEffect } from "react";
 import AuthLoading from "./auth-loading";
 
 export default function AuthGuard({ children }: { children: ReactNode }) {
-    const router = useRouter()
+  const router = useRouter();
+  const pathname = usePathname();
+  const { data, isPending, isError } = useGetMe();
+  const user = data?.data;
+  const mustChangePassword = Boolean(user?.needPasswordChange);
+  const onChangePasswordPage = pathname === "/change-password";
 
-    const { data, isPending, isError } = useGetMe();
-
-    // console.log(data);
-
-    const user = data?.data
-
-    useEffect(() => {
-        if(isPending){
-            return
-        }
-        if (isError || !user) {
-            router.replace("/login")
-        }
-
-    }, [isPending,isError, user])
-
-    if(isPending){
-        return <AuthLoading/>
+  useEffect(() => {
+    if (isPending) {
+      return;
     }
 
     if (isError || !user) {
-            return <AuthLoading label=" Redirecting..."/>
-        }
+      router.replace("/login");
+      return;
+    }
 
-    return <>{children}</>;
+    if (mustChangePassword && !onChangePasswordPage) {
+      router.replace("/change-password");
+    }
+  }, [
+    isPending,
+    isError,
+    user,
+    mustChangePassword,
+    onChangePasswordPage,
+    router,
+  ]);
+
+  if (isPending) {
+    return <AuthLoading />;
+  }
+
+  if (isError || !user || (mustChangePassword && !onChangePasswordPage)) {
+    return <AuthLoading label=" Redirecting..." />;
+  }
+
+  return <>{children}</>;
 }

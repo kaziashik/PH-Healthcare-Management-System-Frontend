@@ -1,7 +1,14 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { Input } from "../ui/input";
+import { Eye, EyeClosed } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useContinueAfterAuth, useLogin } from "@/hooks/auth.hook";
+import { apiErrorMessage } from "@/utils";
+import { loginSchema } from "@/validation";
+import GoogleLoginComponent from "../modules/google-login/GoogleLogin";
 import { Button } from "../ui/button";
 import {
   Field,
@@ -10,26 +17,22 @@ import {
   FieldLabel,
   FieldSeparator,
 } from "../ui/field";
-import { loginSchema } from "@/validation";
-import { useState } from "react";
-import { Eye, EyeClosed } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { toast } from "../ui/toast";
+import { Input } from "../ui/input";
 import { Spinner } from "../ui/spinner";
-import { GoogleLogin } from "@react-oauth/google";
-import Link from "next/link";
-import GoogleLoginComponent from "../modules/google-login/GoogleLogin";
-import { useLogin } from "@/hooks/auth.hook";
+import { toast } from "../ui/toast";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [continuing, setContinuing] = useState(false);
   const router = useRouter();
   const { mutate: login, isPending: loginPending } = useLogin();
+  const continueAfterAuth = useContinueAfterAuth();
+  const busy = loginPending || continuing;
 
   const form = useForm({
     defaultValues: {
-      email: "superadmin@gmail.com",
-      password: "Super@admin12345",
+      email: "",
+      password: "",
     },
     validators: {
       onSubmit: loginSchema,
@@ -41,29 +44,32 @@ export default function LoginForm() {
       };
 
       login(loginData, {
-        onSuccess: (res) => {
-          
+        onSuccess: async () => {
+          setContinuing(true);
           toast.add({
             title: "Login Success",
             description: "Welcome back",
             type: "success",
           });
-          console.log("chicken",res);
-          router.push("/");
+
+          try {
+            await continueAfterAuth();
+          } catch {
+            router.push("/");
+          } finally {
+            setContinuing(false);
+          }
         },
         onError: (err) => {
           toast.add({
             title: "Authorization failure",
-            description:
-              err.message || "Something went wrong. Please try again",
+            description: apiErrorMessage(err),
             type: "error",
           });
         },
       });
     },
   });
-
-  
 
   return (
     <div className="flex flex-col gap-5">
@@ -143,8 +149,17 @@ export default function LoginForm() {
             }}
           </form.Field>
 
-          <Button disabled={loginPending} type="submit">
-            {loginPending ? (
+          <div className="flex justify-end">
+            <Link
+              href="/forgot-password"
+              className="text-sm font-medium underline underline-offset-4 hover:text-primary"
+            >
+              Forgot password?
+            </Link>
+          </div>
+
+          <Button disabled={busy} type="submit">
+            {busy ? (
               <>
                 <Spinner /> submitting
               </>

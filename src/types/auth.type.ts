@@ -16,3 +16,22 @@ export interface VerifyAccountPayload {
   email: string;
   otp: string;
 }
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  otp: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface SetPasswordPayload {
+  newPassword: string;
+}

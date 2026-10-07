@@ -1,13 +1,12 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import Logo from "@/assets/svg/Logo";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { useGetMe, useLogout } from "@/hooks/auth.hook";
-
-import { UserRole } from "@/types";
-import { useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
+import type { UserRole } from "@/types";
 
 export default function Header() {
   const routes = [
@@ -26,7 +25,7 @@ export default function Header() {
   const { mutate: logout } = useLogout();
   const queryClient = useQueryClient();
 
-  const role: UserRole = !!data?.data && data?.data.role;
+  const role = data?.data?.role;
 
   const handleLogout = () => {
     logout(undefined, {

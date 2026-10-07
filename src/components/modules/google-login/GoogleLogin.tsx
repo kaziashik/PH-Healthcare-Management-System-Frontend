@@ -1,15 +1,15 @@
 "use client";
 
-import { toast } from "@/components/ui/toast";
-import { useGoogleOAuth } from "@/hooks/auth.hook";
-
 import { GoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
+import { toast } from "@/components/ui/toast";
+import { useContinueAfterAuth, useGoogleOAuth } from "@/hooks/auth.hook";
+import { apiErrorMessage } from "@/utils";
 
 export default function GoogleLoginComponent() {
   const router = useRouter();
+  const continueAfterAuth = useContinueAfterAuth();
 
-  
   const { mutate: googleLogin } = useGoogleOAuth();
 
   const handleGoogleSuccess = (credentialResponse: { credential?: string }) => {
@@ -27,19 +27,23 @@ export default function GoogleLoginComponent() {
     googleLogin(
       { idToken },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
           toast.add({
             title: "Logged in Successfully",
             description: "Welcome back",
             type: "success",
           });
-          router.push("/");
+
+          try {
+            await continueAfterAuth();
+          } catch {
+            router.push("/");
+          }
         },
         onError: (err) => {
           toast.add({
             title: "Google OAuth Failed",
-            description:
-              err.message || "Something went wrong. Please try again",
+            description: apiErrorMessage(err),
             type: "error",
           });
         },

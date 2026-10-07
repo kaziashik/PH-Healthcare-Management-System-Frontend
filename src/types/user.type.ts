@@ -12,6 +12,7 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   needPasswordChange: boolean;
+  hasPassword: boolean;
   imageUrl: null | string;
   imagePublicId: null | string;
   isDeleted: boolean;
