@@ -29,7 +29,7 @@ export default function DoctorApprovalTable({
   const doctors = data?.data || [];
 
   return (
-    <div className="border rounded-lg">
+    <div className="panel">
       <Table>
         <TableHeader>
           <TableRow>

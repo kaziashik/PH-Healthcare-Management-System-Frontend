@@ -9,7 +9,7 @@ import { useGetAllDoctors } from "@/hooks/doctor.hook";
 import type { DoctorParams } from "@/types";
 import DoctorCard, { DoctorCardSkeleton } from "./doctor-card";
 
-const pageSize = 6;
+const pageSize = 12;
 
 const sorts: {
   label: string;
@@ -67,7 +67,7 @@ export default function DoctorsExplorer() {
   return (
     <div className="flex flex-col gap-6">
       <form
-        className="grid gap-3 rounded-lg border bg-card p-4 md:grid-cols-2 xl:grid-cols-3"
+        className="panel grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-3"
         onSubmit={(event) => {
           event.preventDefault();
           setPage(1);

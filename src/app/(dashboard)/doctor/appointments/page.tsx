@@ -2,7 +2,7 @@ import DoctorAppointmentsPanel from "@/components/modules/doctor-appointments/ap
 
 export default function DoctorAppointmentsPage() {
   return (
-    <section className="p-5">
+    <section>
       <div className="mb-5">
         <h1 className="text-2xl font-bold tracking-tight">Appointments</h1>
         <p className="text-sm text-muted-foreground">

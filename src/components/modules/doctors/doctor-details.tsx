@@ -46,7 +46,7 @@ export default function DoctorDetails({ doctorId }: { doctorId: string }) {
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="grid gap-6 rounded-lg border bg-card p-5 md:grid-cols-[180px_1fr]">
+      <section className="panel grid gap-6 p-4 md:grid-cols-[180px_1fr]">
         <div className="flex h-44 items-center justify-center rounded-lg bg-primary/10 text-4xl font-semibold text-primary">
           {doctorInitials(doctor.name)}
         </div>
@@ -84,7 +84,7 @@ export default function DoctorDetails({ doctorId }: { doctorId: string }) {
         </div>
       </section>
 
-      <section className="rounded-lg border p-5">
+      <section className="panel p-4">
         <h2 className="text-xl font-semibold">Overview</h2>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
           {doctor.bio?.trim() ||
@@ -92,7 +92,7 @@ export default function DoctorDetails({ doctorId }: { doctorId: string }) {
         </p>
       </section>
 
-      <section className="rounded-lg border p-5">
+      <section className="panel p-4">
         <h2 className="text-xl font-semibold">Key information</h2>
         <dl className="mt-4 grid gap-3 sm:grid-cols-2">
           {facts.map(([label, value]) => (
@@ -104,7 +104,7 @@ export default function DoctorDetails({ doctorId }: { doctorId: string }) {
         </dl>
       </section>
 
-      <section className="rounded-lg border p-5">
+      <section className="panel p-4">
         <h2 className="text-xl font-semibold">How a visit works</h2>
         <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-muted-foreground">
           <li>Published schedules are 3 to 8 hours on one calendar date.</li>

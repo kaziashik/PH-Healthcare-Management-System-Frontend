@@ -1,6 +1,6 @@
 export default function PrivacyPage() {
   return (
-    <section className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-10">
+    <section className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-14 sm:px-6 md:py-16">
       <h1 className="text-3xl font-bold tracking-tight">Privacy</h1>
       <p className="text-sm leading-6 text-muted-foreground">
         Account email, name, and role are stored so the clinic can sign you in

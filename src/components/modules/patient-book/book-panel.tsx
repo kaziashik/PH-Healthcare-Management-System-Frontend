@@ -45,7 +45,7 @@ export default function BookPanel() {
           const fee = schedule.doctor?.consultationFee;
 
           return (
-            <article key={schedule.id} className="rounded-lg border p-4">
+            <article key={schedule.id} className="panel p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="font-semibold">{schedule.doctor?.name}</h2>

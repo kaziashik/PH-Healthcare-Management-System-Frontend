@@ -2,7 +2,7 @@ import DoctorApprovalTabs from "@/components/modules/doctor-approval/doctor-appr
 
 export default function page() {
   return (
-    <section className="p-5">
+    <section>
       <div>
         <h1> Doctor approval </h1>
         <p>Please review and make sure the given data is real.</p>

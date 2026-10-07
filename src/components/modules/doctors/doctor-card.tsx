@@ -18,7 +18,7 @@ export function doctorFeeLabel(fee: Doctor["consultationFee"]) {
 
 export default function DoctorCard({ doctor }: { doctor: Doctor }) {
   return (
-    <article className="flex h-full min-h-80 flex-col overflow-hidden rounded-lg border bg-card transition-colors hover:border-primary/40">
+    <article className="panel flex min-h-80 flex-col transition-colors hover:border-primary/40">
       <div
         aria-hidden="true"
         className="flex h-36 items-center justify-center bg-primary/10 text-3xl font-semibold text-primary"
@@ -50,7 +50,7 @@ export default function DoctorCard({ doctor }: { doctor: Doctor }) {
 
 export function DoctorCardSkeleton() {
   return (
-    <div className="flex h-full min-h-80 flex-col overflow-hidden rounded-lg border">
+    <div className="panel flex min-h-80 flex-col">
       <div className="h-36 animate-pulse bg-muted" />
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="h-5 w-2/3 animate-pulse rounded bg-muted" />

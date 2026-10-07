@@ -55,7 +55,7 @@ export default function SchedulesPanel() {
       ) : null}
 
       {!isPending && !isError ? (
-        <div className="rounded-lg border">
+        <div className="panel">
           <Table>
             <TableHeader>
               <TableRow>

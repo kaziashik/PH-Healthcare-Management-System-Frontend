@@ -6,7 +6,7 @@ export default function CountChart({
   const max = Math.max(...items.map((item) => item.value), 1);
 
   return (
-    <div className="rounded-lg border p-4">
+    <div className="panel p-4">
       <h2 className="mb-4 font-semibold">Account totals</h2>
       <div className="flex h-48 items-end gap-4">
         {items.map((item) => (

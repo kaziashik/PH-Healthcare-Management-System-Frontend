@@ -11,7 +11,7 @@ export default function PatientOverview() {
 
   return (
     <div className="grid gap-5 lg:grid-cols-2">
-      <section className="rounded-lg border p-4">
+      <section className="panel flex flex-col p-4">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="font-semibold">Open today</h2>
           <Link
@@ -40,7 +40,7 @@ export default function PatientOverview() {
         )}
       </section>
 
-      <section className="rounded-lg border p-4">
+      <section className="panel flex flex-col p-4">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="font-semibold">Your visits</h2>
           <Link

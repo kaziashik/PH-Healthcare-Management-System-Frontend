@@ -20,11 +20,11 @@ const topics = [
 
 export default function HelpPage() {
   return (
-    <section className="mx-auto max-w-3xl px-4 py-10">
+    <section className="mx-auto max-w-3xl px-4 py-14 sm:px-6 md:py-16">
       <h1 className="text-3xl font-bold tracking-tight">Help</h1>
       <div className="mt-6 flex flex-col gap-4">
         {topics.map((topic) => (
-          <article key={topic.title} className="rounded-lg border p-4">
+          <article key={topic.title} className="panel p-4">
             <h2 className="font-semibold">{topic.title}</h2>
             <p className="mt-2 text-sm text-muted-foreground">{topic.text}</p>
             <Link

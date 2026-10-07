@@ -19,7 +19,7 @@ function SummaryCard({
   pending: boolean;
 }) {
   return (
-    <section className="rounded-lg border p-4">
+    <section className="panel flex flex-col p-4">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="font-semibold">{title}</h2>
         <Link className="text-sm underline underline-offset-4" href={href}>

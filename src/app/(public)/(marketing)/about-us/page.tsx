@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function AboutUsPage() {
   return (
-    <section className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-10">
+    <section className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-14 sm:px-6 md:py-16">
       <h1 className="text-3xl font-bold tracking-tight">About PH Healthcare</h1>
       <p className="text-sm leading-6 text-muted-foreground">
         PH Healthcare connects patients with approved doctors for same-day

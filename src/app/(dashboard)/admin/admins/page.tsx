@@ -2,7 +2,7 @@ import AdminsPanel from "@/components/modules/admins/admins-panel";
 
 export default function AdminsPage() {
   return (
-    <section className="p-5">
+    <section>
       <div className="mb-5">
         <h1 className="text-2xl font-bold tracking-tight">Admins</h1>
         <p className="text-sm text-muted-foreground">

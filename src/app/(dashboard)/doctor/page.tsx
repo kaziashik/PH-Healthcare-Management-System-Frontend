@@ -2,7 +2,7 @@ import DoctorOverview from "@/components/modules/doctor-overview/doctor-overview
 
 export default function DoctorPage() {
   return (
-    <section className="p-5">
+    <section>
       <div className="mb-5">
         <h1 className="text-2xl font-bold tracking-tight">Overview</h1>
         <p className="text-sm text-muted-foreground">

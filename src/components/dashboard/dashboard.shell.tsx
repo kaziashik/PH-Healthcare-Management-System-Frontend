@@ -19,11 +19,11 @@ export default function DashboardShell({
     <SidebarProvider>
       <DashboardSidebar role={role} />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 sm:px-6">
           <SidebarTrigger className="-ml-1" />
           <AccountMenu />
         </header>
-        {children}
+        <div className="flex flex-1 flex-col px-4 py-6 sm:px-6">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

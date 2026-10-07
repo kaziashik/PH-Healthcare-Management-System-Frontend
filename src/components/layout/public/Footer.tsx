@@ -32,7 +32,7 @@ const groups = [
 export default function Footer() {
   return (
     <footer className="border-t bg-card">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-4">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 md:grid-cols-4 md:py-16">
         <div>
           <p className="font-semibold">PH Healthcare</p>
           <p className="mt-2 text-sm text-muted-foreground">

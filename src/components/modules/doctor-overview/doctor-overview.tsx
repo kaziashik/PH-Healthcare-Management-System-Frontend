@@ -15,7 +15,7 @@ export default function DoctorOverview() {
 
   return (
     <div className="grid gap-5 lg:grid-cols-2">
-      <section className="rounded-lg border p-4">
+      <section className="panel flex flex-col p-4">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="font-semibold">Schedules</h2>
           <Link
@@ -42,7 +42,7 @@ export default function DoctorOverview() {
         )}
       </section>
 
-      <section className="rounded-lg border p-4">
+      <section className="panel flex flex-col p-4">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="font-semibold">Booked visits</h2>
           <Link

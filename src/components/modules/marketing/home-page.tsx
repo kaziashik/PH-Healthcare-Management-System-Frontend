@@ -48,7 +48,7 @@ const questions = [
 ];
 
 export default function HomePage() {
-  const doctors = useGetAllDoctors({ page: 1, limit: 3 });
+  const doctors = useGetAllDoctors({ page: 1, limit: 50 });
   const me = useGetMe();
   const role = me.data?.data?.role;
   const primary =
@@ -131,7 +131,7 @@ export default function HomePage() {
               "The patient pays the consultation fee, then joins at the assigned serial time.",
             ],
           ].map(([step, title, text]) => (
-            <article key={step} className="rounded-lg border bg-card p-5">
+            <article key={step} className="panel p-4">
               <p className="text-sm font-medium text-primary">Step {step}</p>
               <h2 className="mt-2 text-lg font-semibold">{title}</h2>
               <p className="mt-2 text-sm text-muted-foreground">{text}</p>
@@ -184,7 +184,7 @@ export default function HomePage() {
       <section className="border-t">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 py-14 sm:px-6 md:grid-cols-2 md:py-16 lg:grid-cols-4">
           {services.map((service) => (
-            <article key={service.title} className="rounded-lg border p-5">
+            <article key={service.title} className="panel p-4">
               <h2 className="font-semibold">{service.title}</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 {service.text}

@@ -2,7 +2,7 @@ import PatientsPanel from "@/components/modules/patients/patients-panel";
 
 export default function PatientsPage() {
   return (
-    <section className="p-5">
+    <section>
       <div className="mb-5">
         <h1 className="text-2xl font-bold tracking-tight">Patients</h1>
         <p className="text-sm text-muted-foreground">

@@ -2,7 +2,7 @@ import SchedulesPanel from "@/components/modules/doctor-schedules/schedules-pane
 
 export default function DoctorSchedulesPage() {
   return (
-    <section className="p-5">
+    <section>
       <div className="mb-5">
         <h1 className="text-2xl font-bold tracking-tight">Schedules</h1>
         <p className="text-sm text-muted-foreground">

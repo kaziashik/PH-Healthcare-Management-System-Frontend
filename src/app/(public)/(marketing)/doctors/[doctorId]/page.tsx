@@ -8,7 +8,7 @@ export default async function DoctorDetailsPage({
   const { doctorId } = await params;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-10">
+    <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <DoctorDetails doctorId={doctorId} />
     </section>
   );
