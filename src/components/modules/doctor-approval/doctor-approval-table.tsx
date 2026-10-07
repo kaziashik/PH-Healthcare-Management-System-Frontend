@@ -43,6 +43,11 @@ export default function DoctorApprovalTable({
           </TableRow>
         </TableHeader>
         <TableBody>
+          {doctors.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7}>No doctors found.</TableCell>
+            </TableRow>
+          ) : null}
           {doctors.map((doctor) => (
             <TableRow key={doctor.id}>
               <TableCell>{doctor.name}</TableCell>

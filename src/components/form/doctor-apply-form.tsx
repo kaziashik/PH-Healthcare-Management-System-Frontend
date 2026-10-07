@@ -33,6 +33,7 @@ import { formatFileSize } from "@/utils";
 
 import { toast } from "../ui/toast";
 import { Spinner } from "../ui/spinner";
+import { PasswordInput } from "./password-input";
 import { useApplyAsDoctor } from "@/hooks/doctor.hook";
 import {
     doctorApplicationSchema,
@@ -48,7 +49,8 @@ import { DoctorApplicationData } from "@/types/doctor.type";
 // {
 //   "user": {
 //     "name": "Dr. Sarah Jenkins",
-//     "email": "dr.sarah.jenkins@example.com"
+//     "email": "dr.sarah.jenkins@example.com",
+//     "password": "Doctor@12345"
 //   },
 //   "doctor": {
 //     "address": "123 Medical Plaza, Suite 400, New York, NY",
@@ -84,6 +86,8 @@ export default function DoctorApplyForm() {
         defaultValues: {
             name: "",
             email: "",
+            password: "",
+            confirmPassword: "",
             phone: "",
             address: "",
             specialization: "",
@@ -105,6 +109,7 @@ export default function DoctorApplyForm() {
                 user: {
                     name: value.name.trim(),
                     email: value.email.trim(),
+                    password: value.password,
                 },
                 doctor: {
                     specialization: value.specialization.trim(),
@@ -230,6 +235,55 @@ export default function DoctorApplyForm() {
                                                 autoComplete="email"
                                             />
                                         </div>
+                                        {isInvalid && (
+                                            <FieldError errors={field.state.meta.errors} />
+                                        )}
+                                    </Field>
+                                );
+                            }}
+                        </form.Field>
+
+                        <form.Field name="password">
+                            {(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched && !field.state.meta.isValid;
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                                        <PasswordInput
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={field.handleChange}
+                                            invalid={isInvalid}
+                                        />
+                                        <FieldDescription>
+                                            At least 8 characters, with upper and lower case, a number, and a symbol.
+                                        </FieldDescription>
+                                        {isInvalid && (
+                                            <FieldError errors={field.state.meta.errors} />
+                                        )}
+                                    </Field>
+                                );
+                            }}
+                        </form.Field>
+
+                        <form.Field name="confirmPassword">
+                            {(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched && !field.state.meta.isValid;
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>Confirm password</FieldLabel>
+                                        <PasswordInput
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={field.handleChange}
+                                            invalid={isInvalid}
+                                        />
                                         {isInvalid && (
                                             <FieldError errors={field.state.meta.errors} />
                                         )}

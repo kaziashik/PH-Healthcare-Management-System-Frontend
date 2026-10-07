@@ -1,9 +1,10 @@
-import { User } from "./user.type";
+import type { User } from "./user.type";
 
 export interface DoctorApplicationData {
   user: {
     name: string;
     email: string;
+    password: string;
   };
   doctor: {
     specialization: string;
