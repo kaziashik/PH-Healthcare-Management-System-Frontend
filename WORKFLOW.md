@@ -1,5 +1,8 @@
 # PH Healthcare workflow
 
+Site: https://ph-healthcare-six.vercel.app
+API: https://ph-healthcare-api.vercel.app
+
 This file describes how the live app behaves. The diagrams match the current Express API and Next.js pages.
 
 Roles are `PATIENT`, `DOCTOR`, `ADMIN`, and `SUPER_ADMIN`. Admin and super admin share the `/admin` area. A super admin is the only role that can create another admin or block an admin.
