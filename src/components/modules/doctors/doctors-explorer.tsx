@@ -64,117 +64,129 @@ export default function DoctorsExplorer() {
   });
   const doctors = data?.data ?? [];
 
+  const total = data?.meta?.total;
+
   return (
     <div className="flex flex-col gap-6">
       <form
-        className="panel grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-3"
+        className="panel flex flex-col gap-4 p-4 sm:p-5"
         onSubmit={(event) => {
           event.preventDefault();
           setPage(1);
           setSearchTerm(draft.trim());
         }}
       >
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium" htmlFor="doctor-search">
             Search
           </label>
-          <Input
-            id="doctor-search"
-            value={draft}
-            onChange={(event) => setDraft(event.target.value)}
-            placeholder="Name, email, or specialty"
-          />
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              id="doctor-search"
+              value={draft}
+              onChange={(event) => setDraft(event.target.value)}
+              placeholder="Doctor name or specialty"
+              className="sm:flex-1"
+            />
+            <div className="flex gap-2">
+              <Button type="submit">Search</Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setDraft("");
+                  setSearchTerm("");
+                  setSpecialization("");
+                  setMaxFee("");
+                  setMinExperience("");
+                  setSortIndex(0);
+                  setPage(1);
+                }}
+              >
+                Clear
+              </Button>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium" htmlFor="doctor-specialty">
-            Specialty
-          </label>
-          <select
-            id="doctor-specialty"
-            className="select-control"
-            value={specialization}
-            onChange={(event) => {
-              setSpecialization(event.target.value);
-              setPage(1);
-            }}
-          >
-            <option value="">All specialties</option>
-            {specializations.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium" htmlFor="doctor-fee">
-            Highest fee (BDT)
-          </label>
-          <Input
-            id="doctor-fee"
-            inputMode="numeric"
-            value={maxFee}
-            onChange={(event) => {
-              setMaxFee(event.target.value);
-              setPage(1);
-            }}
-            placeholder="500"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium" htmlFor="doctor-experience">
-            Minimum experience (years)
-          </label>
-          <Input
-            id="doctor-experience"
-            inputMode="numeric"
-            value={minExperience}
-            onChange={(event) => {
-              setMinExperience(event.target.value);
-              setPage(1);
-            }}
-            placeholder="5"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium" htmlFor="doctor-sort">
-            Sort
-          </label>
-          <select
-            id="doctor-sort"
-            className="select-control"
-            value={sortIndex}
-            onChange={(event) => {
-              setSortIndex(Number(event.target.value));
-              setPage(1);
-            }}
-          >
-            {sorts.map((item, index) => (
-              <option key={item.label} value={index}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-wrap gap-2 md:col-span-2 xl:col-span-3">
-          <Button type="submit">Search</Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => {
-              setDraft("");
-              setSearchTerm("");
-              setSpecialization("");
-              setMaxFee("");
-              setMinExperience("");
-              setSortIndex(0);
-              setPage(1);
-            }}
-          >
-            Clear filters
-          </Button>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium" htmlFor="doctor-specialty">
+              Specialty
+            </label>
+            <select
+              id="doctor-specialty"
+              className="select-control"
+              value={specialization}
+              onChange={(event) => {
+                setSpecialization(event.target.value);
+                setPage(1);
+              }}
+            >
+              <option value="">All specialties</option>
+              {specializations.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium" htmlFor="doctor-fee">
+              Highest fee (BDT)
+            </label>
+            <Input
+              id="doctor-fee"
+              inputMode="numeric"
+              value={maxFee}
+              onChange={(event) => {
+                setMaxFee(event.target.value);
+                setPage(1);
+              }}
+              placeholder="No limit"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium" htmlFor="doctor-experience">
+              Minimum experience
+            </label>
+            <Input
+              id="doctor-experience"
+              inputMode="numeric"
+              value={minExperience}
+              onChange={(event) => {
+                setMinExperience(event.target.value);
+                setPage(1);
+              }}
+              placeholder="Any years"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium" htmlFor="doctor-sort">
+              Sort
+            </label>
+            <select
+              id="doctor-sort"
+              className="select-control"
+              value={sortIndex}
+              onChange={(event) => {
+                setSortIndex(Number(event.target.value));
+                setPage(1);
+              }}
+            >
+              {sorts.map((item, index) => (
+                <option key={item.label} value={index}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </form>
+      <p className="text-sm text-muted-foreground">
+        {isPending
+          ? "Loading doctors…"
+          : `${total ?? 0} ${total === 1 ? "doctor" : "doctors"}`}
+      </p>
 
       {isPending ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

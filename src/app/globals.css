@@ -189,8 +189,14 @@
   width: 100%;
   border-radius: var(--radius-lg);
   border: 1px solid var(--input);
-  background: var(--background);
+  background-color: transparent;
   padding-inline: 0.625rem;
   font-size: 0.875rem;
   color: var(--foreground);
+  outline: none;
+
+  &:focus-visible {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+  }
 }

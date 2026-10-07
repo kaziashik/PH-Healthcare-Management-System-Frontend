@@ -6,10 +6,10 @@ export default function DoctorsPage() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Doctors</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Doctors</h1>
         <p className="mt-2 max-w-2xl text-base text-muted-foreground">
-          Search by name, then narrow the list by specialty, fee, and years of
-          experience.
+          Approved doctors open for booking. Search by name, then filter by
+          specialty, fee, and experience.
         </p>
       </div>
       <Suspense
