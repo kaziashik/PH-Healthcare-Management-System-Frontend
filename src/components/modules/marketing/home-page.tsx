@@ -1,5 +1,6 @@
 "use client";
 
+import { CalendarClock, Clock3, FileHeart, Wallet } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useGetMe } from "@/hooks/auth.hook";
@@ -10,18 +11,22 @@ const services = [
   {
     title: "Same-day schedules",
     text: "A doctor publishes a 3 to 8 hour window. Patients can book only before it starts.",
+    icon: CalendarClock,
   },
   {
     title: "bKash checkout",
     text: "Booking opens the bKash payment page. The visit is confirmed after payment succeeds.",
+    icon: Wallet,
   },
   {
     title: "Serial slots",
     text: "Each paid visit gets the next open 20-minute serial inside the schedule.",
+    icon: Clock3,
   },
   {
     title: "Prescriptions",
     text: "After a completed visit, the doctor records findings and medicines. The patient can open the prescription.",
+    icon: FileHeart,
   },
 ];
 
@@ -74,7 +79,8 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="mx-auto flex min-h-[70vh] max-h-[640px] max-w-7xl flex-col justify-center px-4 py-12 sm:px-6">
+      <section className="mx-auto grid min-h-[70vh] max-w-7xl items-center gap-8 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:gap-12 lg:py-16">
+        <div>
         <p className="text-sm font-medium tracking-normal text-primary">
           PH Healthcare
         </p>
@@ -109,6 +115,14 @@ export default function HomePage() {
               Apply as a doctor
             </Link>
           ) : null}
+        </div>
+        </div>
+        <div className="h-72 overflow-hidden rounded-lg sm:h-96 lg:h-[28rem]">
+          <img
+            src="/clinic/hero-hospital.jpg"
+            alt="Bright hospital lobby with a wood reception desk"
+            className="hero-ken h-full w-full object-cover"
+          />
         </div>
       </section>
 
@@ -183,14 +197,20 @@ export default function HomePage() {
 
       <section className="border-t">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 py-14 sm:px-6 md:grid-cols-2 md:py-16 lg:grid-cols-4">
-          {services.map((service) => (
+          {services.map((service) => {
+            const Icon = service.icon;
+            return (
             <article key={service.title} className="panel p-4">
+              <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Icon className="size-5" aria-hidden="true" />
+              </div>
               <h2 className="font-semibold">{service.title}</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 {service.text}
               </p>
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
 

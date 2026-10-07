@@ -29,9 +29,36 @@ const groups = [
   },
 ];
 
+const scenes = [
+  { src: "/clinic/clinic-reception.jpg", alt: "Bright clinic reception" },
+  { src: "/clinic/clinic-consult.jpg", alt: "Private consultation room" },
+  { src: "/clinic/clinic-corridor.jpg", alt: "Quiet hospital corridor" },
+  { src: "/clinic/clinic-waiting.jpg", alt: "Waiting room with soft daylight" },
+];
+
 export default function Footer() {
   return (
     <footer className="border-t bg-card">
+      <div className="overflow-hidden border-b" aria-label="Clinic rooms">
+        <div className="clinic-slide flex w-max gap-3 px-3 py-4">
+          {["first", "repeat"].map((copy) => (
+            <div
+              key={copy}
+              className="flex gap-3"
+              aria-hidden={copy === "repeat"}
+            >
+              {scenes.map((scene) => (
+                <img
+                  key={`${copy}-${scene.src}`}
+                  src={scene.src}
+                  alt={copy === "first" ? scene.alt : ""}
+                  className="h-36 w-64 rounded-lg object-cover sm:h-44 sm:w-80"
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 md:grid-cols-4 md:py-16">
         <div>
           <p className="font-semibold">PH Healthcare</p>

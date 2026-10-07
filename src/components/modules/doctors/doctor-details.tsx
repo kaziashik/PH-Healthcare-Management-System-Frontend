@@ -4,7 +4,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useGetMe } from "@/hooks/auth.hook";
 import { useGetAllDoctors, useGetDoctor } from "@/hooks/doctor.hook";
-import DoctorCard, { doctorFeeLabel, doctorInitials } from "./doctor-card";
+import DoctorCard, {
+  doctorFeeLabel,
+  doctorInitials,
+  doctorPhoto,
+} from "./doctor-card";
 
 export default function DoctorDetails({ doctorId }: { doctorId: string }) {
   const me = useGetMe();
@@ -47,9 +51,17 @@ export default function DoctorDetails({ doctorId }: { doctorId: string }) {
   return (
     <div className="flex flex-col gap-8">
       <section className="panel grid gap-6 p-4 md:grid-cols-[180px_1fr]">
-        <div className="flex h-44 items-center justify-center rounded-lg bg-primary/10 text-4xl font-semibold text-primary">
-          {doctorInitials(doctor.name)}
-        </div>
+        {doctorPhoto(doctor) ? (
+          <img
+            src={doctorPhoto(doctor)}
+            alt={`${doctor.name}, ${doctor.specialization} physician`}
+            className="aspect-[5/4] w-full rounded-lg object-cover object-top"
+          />
+        ) : (
+          <div className="flex aspect-[5/4] items-center justify-center rounded-lg bg-primary/10 text-4xl font-semibold text-primary">
+            {doctorInitials(doctor.name)}
+          </div>
+        )}
         <div className="flex flex-col gap-3">
           <h1 className="text-3xl font-bold tracking-tight">{doctor.name}</h1>
           <p className="text-muted-foreground">{doctor.specialization}</p>
