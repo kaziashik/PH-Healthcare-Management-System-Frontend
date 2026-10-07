@@ -62,3 +62,7 @@ export function setPassword(payload: SetPasswordPayload) {
 export function googleOAuth(payload: { idToken: string }) {
   return apiClient("/auth/google", { method: "POST", body: payload });
 }
+
+export function facebookOAuth(payload: { accessToken: string }) {
+  return apiClient("/auth/facebook", { method: "POST", body: payload });
+}

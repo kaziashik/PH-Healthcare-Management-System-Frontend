@@ -21,6 +21,7 @@ import z from "zod";
 import { toast } from "../ui/toast";
 import { Spinner } from "../ui/spinner";
 import { useRegistration } from "@/hooks/auth.hook";
+import FacebookLoginButton from "../modules/facebook-login/FacebookLogin";
 import GoogleLoginComponent from "../modules/google-login/GoogleLogin";
 
 export function RegisterForm() {
@@ -31,11 +32,11 @@ export function RegisterForm() {
   type PatientDefaultValues = z.infer<typeof patientRegistrationSchema>;
 
   const defaultValues: PatientDefaultValues = {
-    name: "Mir",
-    email: "mir@gmail.com",
-    contactNumber: "01912345678",
-    password: "@User123456",
-    confirmPassword: "@User123456",
+    name: "",
+    email: "",
+    contactNumber: "",
+    password: "",
+    confirmPassword: "",
   };
 
   const { mutate: registration, isPending: registrationPending } =
@@ -89,9 +90,9 @@ export function RegisterForm() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">Create an account</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Create a patient account</h1>
         <p className="text-sm text-muted-foreground">
-          Enter your details below to create your account
+          Registration is for patients. Doctors apply from the clinic site.
         </p>
       </div>
 
@@ -269,10 +270,10 @@ export function RegisterForm() {
           <Button disabled={registrationPending} type="submit">
             {registrationPending ? (
               <>
-                <Spinner /> submitting
+                <Spinner /> Creating account
               </>
             ) : (
-              "Submit"
+              "Create account"
             )}
           </Button>
         </FieldGroup>
@@ -280,7 +281,10 @@ export function RegisterForm() {
 
       <FieldSeparator>Or continue with</FieldSeparator>
 
-      <GoogleLoginComponent />
+      <div className="flex flex-col gap-3">
+        <GoogleLoginComponent />
+        <FacebookLoginButton />
+      </div>
 
       <div className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}

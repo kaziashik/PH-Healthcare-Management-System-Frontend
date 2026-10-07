@@ -8,8 +8,8 @@ export default function DoctorsPage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Doctors</h1>
         <p className="mt-2 max-w-2xl text-base text-muted-foreground">
-          Approved physicians. Filter by specialty and fee, then open a profile
-          before you book.
+          Search by name, then narrow the list by specialty, fee, and years of
+          experience.
         </p>
       </div>
       <Suspense

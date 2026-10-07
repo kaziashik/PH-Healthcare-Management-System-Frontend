@@ -6,8 +6,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useContinueAfterAuth, useLogin } from "@/hooks/auth.hook";
+import { demoAccounts } from "@/lib/demo-accounts";
 import { apiErrorMessage } from "@/utils";
 import { loginSchema } from "@/validation";
+import FacebookLoginButton from "../modules/facebook-login/FacebookLogin";
 import GoogleLoginComponent from "../modules/google-login/GoogleLogin";
 import { Button } from "../ui/button";
 import {
@@ -74,11 +76,9 @@ export default function LoginForm() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">
-          Login to your account
-        </h1>
+        <h1 className="text-2xl font-bold tracking-tight">Sign in</h1>
         <p className="text-balance text-sm text-muted-foreground">
-          Enter your email below to login to your account
+          Use your clinic account, or fill a demo role and then sign in.
         </p>
       </div>
 
@@ -134,6 +134,7 @@ export default function LoginForm() {
                     <button
                       className="absolute right-3 top-1/2 -translate-y-1/2"
                       type="button"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                       onClick={() => setShowPassword((prev) => !prev)}
                     >
                       {showPassword ? (
@@ -158,25 +159,30 @@ export default function LoginForm() {
             </Link>
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            disabled={busy}
-            onClick={() => {
-              form.setFieldValue("email", "mir@gmail.com");
-              form.setFieldValue("password", "@User123456");
-            }}
-          >
-            Use patient demo
-          </Button>
+          <div className="grid grid-cols-2 gap-2">
+            {demoAccounts.map((account) => (
+              <Button
+                key={account.label}
+                type="button"
+                variant="outline"
+                disabled={busy}
+                onClick={() => {
+                  form.setFieldValue("email", account.email);
+                  form.setFieldValue("password", account.password);
+                }}
+              >
+                {account.label}
+              </Button>
+            ))}
+          </div>
 
-          <Button disabled={busy} type="submit">
+          <Button className="w-full" disabled={busy} type="submit">
             {busy ? (
               <>
-                <Spinner /> submitting
+                <Spinner /> Signing in
               </>
             ) : (
-              "Submit"
+              "Sign in"
             )}
           </Button>
         </FieldGroup>
@@ -184,7 +190,10 @@ export default function LoginForm() {
 
       <FieldSeparator>Or continue with</FieldSeparator>
 
-      <GoogleLoginComponent />
+      <div className="flex flex-col gap-3">
+        <GoogleLoginComponent />
+        <FacebookLoginButton />
+      </div>
 
       <div className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}

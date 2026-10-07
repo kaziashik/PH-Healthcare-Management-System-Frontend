@@ -59,6 +59,7 @@ export interface DoctorParams {
   searchTerm?: string;
   specialization?: string;
   maxFee?: number;
+  minExperience?: number;
   sortBy?: "createdAt" | "name" | "consultationFee" | "experienceYears";
   sortOrder?: "desc" | "asc";
 }

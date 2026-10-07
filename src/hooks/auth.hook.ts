@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import {
   changePassword,
+  facebookOAuth,
   forgotPassword,
   getMe,
   googleOAuth,
@@ -41,6 +42,12 @@ export function useLogout() {
 export function useGoogleOAuth() {
   return useMutation({
     mutationFn: googleOAuth,
+  });
+}
+
+export function useFacebookOAuth() {
+  return useMutation({
+    mutationFn: facebookOAuth,
   });
 }
 

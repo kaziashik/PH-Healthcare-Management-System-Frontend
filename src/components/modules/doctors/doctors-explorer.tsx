@@ -9,15 +9,24 @@ import { useGetAllDoctors } from "@/hooks/doctor.hook";
 import type { DoctorParams } from "@/types";
 import DoctorCard, { DoctorCardSkeleton } from "./doctor-card";
 
+const pageSize = 6;
+
 const sorts: {
   label: string;
   params: Pick<DoctorParams, "sortBy" | "sortOrder">;
 }[] = [
   { label: "Newest", params: { sortBy: "createdAt", sortOrder: "desc" } },
   { label: "Name", params: { sortBy: "name", sortOrder: "asc" } },
-  { label: "Fee", params: { sortBy: "consultationFee", sortOrder: "asc" } },
   {
-    label: "Experience",
+    label: "Lowest fee",
+    params: { sortBy: "consultationFee", sortOrder: "asc" },
+  },
+  {
+    label: "Highest fee",
+    params: { sortBy: "consultationFee", sortOrder: "desc" },
+  },
+  {
+    label: "Most experience",
     params: { sortBy: "experienceYears", sortOrder: "desc" },
   },
 ];
@@ -29,6 +38,7 @@ export default function DoctorsExplorer() {
   const specialtyQuery = useSearchParams().get("specialty") ?? "";
   const [specialization, setSpecialization] = useState(specialtyQuery);
   const [maxFee, setMaxFee] = useState("");
+  const [minExperience, setMinExperience] = useState("");
   const [sortIndex, setSortIndex] = useState(0);
   const catalog = useGetAllDoctors({ page: 1, limit: 50 });
   const specializations = [
@@ -40,12 +50,16 @@ export default function DoctorsExplorer() {
   ];
   const sort = sorts[sortIndex] ?? sorts[0];
   const parsedFee = Number(maxFee);
+  const parsedExperience = Number(minExperience);
   const { data, isPending, isError } = useGetAllDoctors({
     page,
-    limit: 6,
+    limit: pageSize,
     ...(searchTerm ? { searchTerm } : {}),
     ...(specialization ? { specialization } : {}),
     ...(maxFee && !Number.isNaN(parsedFee) ? { maxFee: parsedFee } : {}),
+    ...(minExperience && !Number.isNaN(parsedExperience)
+      ? { minExperience: parsedExperience }
+      : {}),
     ...sort.params,
   });
   const doctors = data?.data ?? [];
@@ -53,7 +67,7 @@ export default function DoctorsExplorer() {
   return (
     <div className="flex flex-col gap-6">
       <form
-        className="grid gap-3 rounded-lg border bg-card p-4 md:grid-cols-4"
+        className="grid gap-3 rounded-lg border bg-card p-4 md:grid-cols-2 xl:grid-cols-3"
         onSubmit={(event) => {
           event.preventDefault();
           setPage(1);
@@ -108,6 +122,21 @@ export default function DoctorsExplorer() {
           />
         </div>
         <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium" htmlFor="doctor-experience">
+            Minimum experience (years)
+          </label>
+          <Input
+            id="doctor-experience"
+            inputMode="numeric"
+            value={minExperience}
+            onChange={(event) => {
+              setMinExperience(event.target.value);
+              setPage(1);
+            }}
+            placeholder="5"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
           <label className="text-sm font-medium" htmlFor="doctor-sort">
             Sort
           </label>
@@ -127,9 +156,24 @@ export default function DoctorsExplorer() {
             ))}
           </select>
         </div>
-        <Button className="md:col-span-4 md:w-fit" type="submit">
-          Search
-        </Button>
+        <div className="flex flex-wrap gap-2 md:col-span-2 xl:col-span-3">
+          <Button type="submit">Search</Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              setDraft("");
+              setSearchTerm("");
+              setSpecialization("");
+              setMaxFee("");
+              setMinExperience("");
+              setSortIndex(0);
+              setPage(1);
+            }}
+          >
+            Clear filters
+          </Button>
+        </div>
       </form>
 
       {isPending ? (
@@ -157,6 +201,8 @@ export default function DoctorsExplorer() {
       <ListPager
         page={page}
         totalPages={data?.meta?.totalPages ?? 1}
+        total={data?.meta?.total}
+        limit={pageSize}
         onPageChange={setPage}
       />
     </div>
