@@ -4,6 +4,7 @@ import { useState } from "react";
 import CreateManagedAccountForm from "@/components/form/create-managed-account-form";
 import AccountStatusButton from "@/components/modules/account-status/account-status-button";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetContent,
@@ -26,15 +27,39 @@ export default function AdminsPanel() {
   const { data: me } = useGetMe();
   const isSuperAdmin = me?.data?.role === "SUPER_ADMIN";
   const [page, setPage] = useState(1);
+  const [draft, setDraft] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [createKind, setCreateKind] = useState<"ADMIN" | "SUPER_ADMIN" | null>(
     null,
   );
-  const { data, isPending, isError } = useGetAdmins({ page, limit: 10 });
+  const { data, isPending, isError } = useGetAdmins({
+    page,
+    limit: 10,
+    ...(searchTerm ? { searchTerm } : {}),
+  });
   const admins = data?.data ?? [];
   const totalPages = data?.meta?.totalPages ?? 1;
 
   return (
     <div className="flex flex-col gap-5">
+      <form
+        className="flex max-w-md gap-2"
+        onSubmit={(event) => {
+          event.preventDefault();
+          setPage(1);
+          setSearchTerm(draft.trim());
+        }}
+      >
+        <Input
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          placeholder="Search by name or email"
+          aria-label="Search admins"
+        />
+        <Button type="submit" variant="outline">
+          Search
+        </Button>
+      </form>
       <div className="flex flex-wrap gap-2">
         <Button type="button" onClick={() => setCreateKind("ADMIN")}>
           Create admin

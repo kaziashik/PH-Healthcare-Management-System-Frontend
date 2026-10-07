@@ -158,6 +158,18 @@ export default function LoginForm() {
             </Link>
           </div>
 
+          <Button
+            type="button"
+            variant="outline"
+            disabled={busy}
+            onClick={() => {
+              form.setFieldValue("email", "mir@gmail.com");
+              form.setFieldValue("password", "@User123456");
+            }}
+          >
+            Use patient demo
+          </Button>
+
           <Button disabled={busy} type="submit">
             {busy ? (
               <>

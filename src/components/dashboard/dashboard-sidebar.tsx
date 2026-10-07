@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import Logo from "@/assets/svg/Logo";
 import {
   Sidebar,
   SidebarContent,
@@ -12,13 +15,9 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import Logo from "@/assets/svg/Logo";
-import { UserRole } from "@/types";
 import { adminRoutes, doctorRoutes, patientRoutes } from "@/routes";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { SidebarItems } from "@/types/sidbar.type";
+import type { UserRole } from "@/types";
+import type { SidebarItems } from "@/types/sidbar.type";
 
 const sidebarRoutes: Partial<Record<UserRole, SidebarItems>> = {
   SUPER_ADMIN: adminRoutes,

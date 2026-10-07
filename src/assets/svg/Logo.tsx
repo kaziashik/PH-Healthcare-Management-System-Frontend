@@ -7,6 +7,8 @@ export default function Logo() {
       viewBox="0 0 40 40"
       fill="none"
       id="Logo"
+      aria-hidden="true"
+      focusable="false"
     >
       <g id="logomark">
         <path

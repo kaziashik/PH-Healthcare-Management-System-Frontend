@@ -3,6 +3,7 @@ import {
   approveDoctor,
   getAllDoctors,
   getDoctor,
+  updateMyDoctorProfile,
   verifyDoctorAccount,
 } from "@/api";
 import { DoctorParams } from "@/types";
@@ -61,6 +62,16 @@ export function useSuspenseGetAllDoctors(params: DoctorParams) {
 
 
 
+
+export function useUpdateMyDoctorProfile() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateMyDoctorProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["doctors"] });
+    },
+  });
+}
 
 export function useGetDoctor(doctorId: string) {
   return useQuery({

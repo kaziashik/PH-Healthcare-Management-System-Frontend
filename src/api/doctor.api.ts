@@ -49,6 +49,18 @@ export function getDoctor(doctorId: string) {
   return apiClient<ApiResponse<Doctor>>(`/doctor/${doctorId}`);
 }
 
+export function updateMyDoctorProfile(payload: {
+  address?: string;
+  bio?: string;
+  consultationFee?: number;
+  contactNumber?: string;
+}) {
+  return apiClient<ApiResponse<Doctor>>("/doctor/update-my-profile", {
+    method: "PATCH",
+    body: payload,
+  });
+}
+
 
 
 

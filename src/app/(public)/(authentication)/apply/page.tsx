@@ -23,7 +23,7 @@ export default function ApplyPage() {
       <div className="relative hidden bg-muted lg:block">
         <img
           src="/login.jpg"
-          alt="Image"
+          alt="Clinic hallway"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>
