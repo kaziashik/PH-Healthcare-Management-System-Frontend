@@ -20,3 +20,44 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CreateManagedAccountPayload {
+  name: string;
+  organizationEmail: string;
+  personalEmail: string;
+  contactNumber?: string;
+  address?: string;
+}
+
+export interface UpdateAccountStatusPayload {
+  userId: string;
+  status: "ACTIVE" | "BLOCKED";
+}
+
+export interface AccountListParams {
+  page?: number;
+  limit?: number;
+  searchTerm?: string;
+  status?: "ACTIVE" | "BLOCKED";
+  sortOrder?: "asc" | "desc";
+}
+
+export interface AccountRecord {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  status: UserStatus;
+  emailVerified: boolean;
+  createdAt: string;
+  patient: {
+    contactNumber: string | null;
+    address: string | null;
+  } | null;
+  admin: {
+    organizationEmail: string;
+    personalEmail: string;
+    contactNumber: string | null;
+    address: string | null;
+  } | null;
+}

@@ -21,13 +21,14 @@ export default function DoctorApprovalTableLoading() {
             <TableHead>Email</TableHead>
             <TableHead>Contact No.</TableHead>
             <TableHead>Specialization</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead className="text-right">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {[1, 2, 3].map((item) => (
             <TableRow key={item}>
-              <TableCell colSpan={6}>
+              <TableCell colSpan={7}>
                 <Skeleton className="h-5 w-full" />
               </TableCell>
             </TableRow>

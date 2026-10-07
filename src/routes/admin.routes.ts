@@ -12,6 +12,14 @@ export const adminRoutes = [
         title: "Doctor Approval",
         url: `${prefix}/approve-doctor`,
       },
+      {
+        title: "Patients",
+        url: `${prefix}/patients`,
+      },
+      {
+        title: "Admins",
+        url: `${prefix}/admins`,
+      },
     ],
   },
   {
@@ -20,19 +28,6 @@ export const adminRoutes = [
       {
         title: "Change Password",
         url: "/change-password",
-      },
-    ],
-  },
-  {
-    title: "App Settings",
-    items: [
-      {
-        title: "Routing",
-        url: "#",
-      },
-      {
-        title: "Data Fetching",
-        url: "#",
       },
     ],
   },
