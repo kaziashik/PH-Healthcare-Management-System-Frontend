@@ -13,20 +13,17 @@ import {
 import { loginSchema } from "@/validation";
 import { useState } from "react";
 import { Eye, EyeClosed } from "lucide-react";
-
 import { useRouter } from "next/navigation";
 import { toast } from "../ui/toast";
 import { Spinner } from "../ui/spinner";
 import { GoogleLogin } from "@react-oauth/google";
 import Link from "next/link";
-
 import GoogleLoginComponent from "../modules/google-login/GoogleLogin";
 import { useLogin } from "@/hooks/auth.hook";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-
   const { mutate: login, isPending: loginPending } = useLogin();
 
   const form = useForm({
