@@ -2,15 +2,19 @@ const prefix = "/doctor";
 
 export const doctorRoutes = [
   {
-    title: "Schedule",
+    title: "Practice",
     items: [
       {
         title: "Overview",
         url: `${prefix}`,
       },
       {
-        title: "Create Schedule",
-        url: `${prefix}`,
+        title: "Schedules",
+        url: `${prefix}/schedules`,
+      },
+      {
+        title: "Appointments",
+        url: `${prefix}/appointments`,
       },
     ],
   },
@@ -20,20 +24,6 @@ export const doctorRoutes = [
       {
         title: "Change Password",
         url: "/change-password",
-      },
-    ],
-  },
-  {
-    title: "App Settings",
-    items: [
-      {
-        title: "Routing",
-        url: "#",
-      },
-      {
-        title: "Data Fetching",
-        url: "#",
-        isActive: true,
       },
     ],
   },

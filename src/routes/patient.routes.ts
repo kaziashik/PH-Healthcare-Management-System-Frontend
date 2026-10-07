@@ -2,15 +2,23 @@ const prefix = "/patient";
 
 export const patientRoutes = [
   {
-    title: "Bookings",
+    title: "Care",
     items: [
       {
         title: "Overview",
         url: `${prefix}`,
       },
       {
-        title: "Payment History",
-        url: `${prefix}`,
+        title: "Book",
+        url: `${prefix}/book`,
+      },
+      {
+        title: "Appointments",
+        url: `${prefix}/appointments`,
+      },
+      {
+        title: "Payments",
+        url: `${prefix}/payments`,
       },
     ],
   },
@@ -20,20 +28,6 @@ export const patientRoutes = [
       {
         title: "Profile",
         url: `${prefix}/profile`,
-      },
-    ],
-  },
-  {
-    title: "App Settings",
-    items: [
-      {
-        title: "Routing",
-        url: "#",
-      },
-      {
-        title: "Data Fetching",
-        url: "#",
-        isActive: true,
       },
     ],
   },
