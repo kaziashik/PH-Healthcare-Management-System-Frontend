@@ -2,6 +2,7 @@ import {
   applyAsDoctor,
   approveDoctor,
   getAllDoctors,
+  getDoctor,
   verifyDoctorAccount,
 } from "@/api";
 import { DoctorParams } from "@/types";
@@ -60,6 +61,14 @@ export function useSuspenseGetAllDoctors(params: DoctorParams) {
 
 
 
+
+export function useGetDoctor(doctorId: string) {
+  return useQuery({
+    queryKey: ["doctor", doctorId],
+    queryFn: () => getDoctor(doctorId),
+    enabled: Boolean(doctorId),
+  });
+}
 
 export function useApproveDoctor(params: DoctorParams) {
   return useMutation({

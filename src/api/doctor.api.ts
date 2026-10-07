@@ -45,6 +45,10 @@ export function getAllDoctors(params:DoctorParams) {
   })
 }
 
+export function getDoctor(doctorId: string) {
+  return apiClient<ApiResponse<Doctor>>(`/doctor/${doctorId}`);
+}
+
 
 
 
