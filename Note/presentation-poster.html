@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PH Healthcare — presentation poster</title>
+    <style>
+      :root {
+        --paper: #f3efe6;
+        --card: #f7f4ee;
+        --ink: #1a1a1a;
+        --muted: #5e5a52;
+        --line: #d8d2c6;
+        --green: #1e4d3a;
+        --green-soft: #e7f0ea;
+        --patient: #24507a;
+        --doctor: #1e5c45;
+        --admin: #6d4b2e;
+        --super: #3a3f4a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #e6e1d6;
+        color: var(--ink);
+        font-family: "Segoe UI", Candara, sans-serif;
+      }
+
+      body {
+        padding: 28px;
+      }
+
+      .poster {
+        max-width: 1280px;
+        margin: 0 auto;
+        background: var(--paper);
+        border: 1px solid #ddd6c8;
+        padding: 28px 32px 18px;
+      }
+
+      .top {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 24px;
+        align-items: end;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #1c1c1c;
+      }
+
+      .brand {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .mark {
+        width: 72px;
+        height: 72px;
+        background: var(--green);
+        color: #f7f4ee;
+        display: grid;
+        place-items: center;
+        flex: none;
+      }
+
+      h1 {
+        margin: 0;
+        font-family: Palatino, "Palatino Linotype", Georgia, serif;
+        font-size: 52px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 0.95;
+      }
+
+      .does h2,
+      .section-label {
+        margin: 0 0 8px;
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .steps-3 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .mini {
+        width: 118px;
+        min-height: 108px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        padding: 12px 10px 10px;
+        text-align: center;
+      }
+
+      .mini svg {
+        color: var(--green);
+      }
+
+      .mini p {
+        margin: 8px 0 0;
+        font-size: 13px;
+        line-height: 1.25;
+        font-weight: 650;
+      }
+
+      .arrow {
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .section-label {
+        margin: 18px 0 8px;
+      }
+
+      .path {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+      }
+
+      .path article {
+        background: var(--card);
+        border: 1px solid var(--line);
+        padding: 12px 12px 14px;
+        min-height: 168px;
+      }
+
+      .path-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        color: var(--green);
+      }
+
+      .num {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+      }
+
+      .path h3 {
+        margin: 10px 0 6px;
+        font-size: 20px;
+        font-family: Palatino, "Palatino Linotype", Georgia, serif;
+      }
+
+      .path p,
+      .role li {
+        margin: 0;
+        color: #3a3834;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .roles {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+
+      .role {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-top: 4px solid var(--patient);
+        padding: 12px 12px 14px;
+        min-height: 250px;
+      }
+
+      .role.doctor {
+        border-top-color: var(--doctor);
+      }
+
+      .role.admin {
+        border-top-color: var(--admin);
+      }
+
+      .role.super {
+        border-top-color: var(--super);
+      }
+
+      .role-title {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+
+      .role h3 {
+        margin: 0;
+        font-size: 22px;
+        font-family: Palatino, "Palatino Linotype", Georgia, serif;
+      }
+
+      .role .who {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 12.5px;
+        line-height: 1.35;
+      }
+
+      .role ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .role li {
+        display: grid;
+        grid-template-columns: 16px 1fr;
+        gap: 8px;
+        align-items: start;
+      }
+
+      .role svg {
+        margin-top: 2px;
+      }
+
+      .bottom {
+        margin-top: 18px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
+
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        border-radius: 999px;
+        padding: 5px 10px;
+        font-size: 13px;
+      }
+
+      .badge i {
+        font-style: normal;
+        font-weight: 700;
+      }
+
+      .pending i {
+        color: #8a6a12;
+      }
+      .booked i {
+        color: #1e5c45;
+      }
+      .done i {
+        color: #24507a;
+      }
+      .cancel i {
+        color: #8a3030;
+      }
+      .refund i {
+        color: #6d4b2e;
+      }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 14px;
+        color: #8a847a;
+        font-size: 12px;
+      }
+
+      @media (max-width: 980px) {
+        .top,
+        .path,
+        .roles {
+          grid-template-columns: 1fr;
+        }
+
+        .steps-3 {
+          justify-content: flex-start;
+        }
+
+        h1 {
+          font-size: 40px;
+        }
+      }
+
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+        }
+
+        .poster {
+          border: 0;
+          max-width: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="poster">
+      <header class="top">
+        <div class="brand">
+          <div class="mark" aria-hidden="true">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M12 21s7-4.4 7-10a7 7 0 1 0-14 0c0 5.6 7 10 7 10z" />
+              <path d="M12 8v6M9 11h6" />
+            </svg>
+          </div>
+          <div>
+            <h1>PH Healthcare</h1>
+          </div>
+        </div>
+        <div class="does">
+          <h2>WHAT THIS WEBSITE DOES</h2>
+          <div class="steps-3">
+            <div class="mini">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <circle cx="11" cy="11" r="6" />
+                <path d="M20 20l-3.5-3.5" />
+                <circle cx="11" cy="10" r="2" />
+              </svg>
+              <p>People find a doctor</p>
+            </div>
+            <span class="arrow" aria-hidden="true">→</span>
+            <div class="mini">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="4" y="5" width="16" height="15" rx="2" />
+                <path d="M8 3v4M16 3v4M4 10h16" />
+              </svg>
+              <p>Doctors open today’s hours</p>
+            </div>
+            <span class="arrow" aria-hidden="true">→</span>
+            <div class="mini">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="3" y="6" width="18" height="12" rx="2" />
+                <path d="M3 10h18" />
+              </svg>
+              <p>Patients pay with bKash</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <p class="section-label">THE PATH OF ONE VISIT</p>
+      <section class="path">
+        <article>
+          <div class="path-head">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="6"/><path d="M20 20l-3.5-3.5"/></svg>
+            <span class="num">01</span>
+          </div>
+          <h3>Look</h3>
+          <p>Anyone can search approved doctors by name, specialty, fee, and experience. No account is required.</p>
+        </article>
+        <article>
+          <div class="path-head">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 5h14v14H5z"/><path d="M8 9h8M8 13h5"/></svg>
+            <span class="num">02</span>
+          </div>
+          <h3>Join</h3>
+          <p>A patient registers and verifies an email code. A doctor applies with a license, password, and resume.</p>
+        </article>
+        <article>
+          <div class="path-head">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 12l5 5L20 7"/></svg>
+            <span class="num">03</span>
+          </div>
+          <h3>Approve</h3>
+          <p>An admin approves or rejects the doctor. Only an approved, verified doctor can sign in and appear in the directory.</p>
+        </article>
+        <article>
+          <div class="path-head">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
+            <span class="num">04</span>
+          </div>
+          <h3>Open hours</h3>
+          <p>The doctor publishes one date, 3 to 8 hours, with a meeting link. The date locks after publish.</p>
+        </article>
+        <article>
+          <div class="path-head">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg>
+            <span class="num">05</span>
+          </div>
+          <h3>Pay</h3>
+          <p>The patient pays the consultation fee with bKash and receives the next free 20-minute serial.</p>
+        </article>
+        <article>
+          <div class="path-head">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v5h5M9 13h6M9 17h4"/></svg>
+            <span class="num">06</span>
+          </div>
+          <h3>Prescribe</h3>
+          <p>After the visit, the doctor records findings and medicines. The patient opens the prescription.</p>
+        </article>
+      </section>
+
+      <p class="section-label">FOUR ROLES ON THE SITE</p>
+      <section class="roles">
+        <article class="role">
+          <div class="role-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#24507a" stroke-width="1.7"><circle cx="12" cy="8" r="3"/><path d="M5 19c1.5-3 3.8-4.5 7-4.5S17.5 16 19 19"/></svg>
+            <h3>Patient</h3>
+          </div>
+          <p class="who">The person booking a visit. Signs up on the site.</p>
+          <ul>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-3.5-3.5"/></svg><span>Browses doctors and opens a profile.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4"/></svg><span>Books a published schedule on the same day, before it starts.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg><span>Pays the consultation fee with bKash.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="8"/></svg><span>Cancels more than 1 hour before the start to get a refund.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h8l4 4v14H7z"/></svg><span>Opens the prescription after the visit is completed.</span></li>
+          </ul>
+        </article>
+        <article class="role doctor">
+          <div class="role-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e5c45" stroke-width="1.7"><path d="M12 21s7-4.4 7-10a7 7 0 1 0-14 0c0 5.6 7 10 7 10z"/><path d="M12 9v5M9.5 11.5h5"/></svg>
+            <h3>Doctor</h3>
+          </div>
+          <p class="who">The physician. Applies on the site, then waits for approval.</p>
+          <ul>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h8l4 4v14H7z"/></svg><span>Applies with a license, password, and resume.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12l5 5L20 7"/></svg><span>Signs in only after the email is verified and an admin approves.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16"/></svg><span>Publishes a 3 to 8 hour schedule on one date.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="10" width="12" height="10" rx="1"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/></svg><span>Date locks after publish. Time locks after the first booking.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4h8M9 4v6l-4 8h14l-4-8V4"/></svg><span>Completes the visit and writes findings and medicines.</span></li>
+          </ul>
+        </article>
+        <article class="role admin">
+          <div class="role-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6d4b2e" stroke-width="1.7"><path d="M12 3l8 3v6c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V6l8-3z"/></svg>
+            <h3>Admin</h3>
+          </div>
+          <p class="who">Reviews the clinic. Not created from the public sign-up form.</p>
+          <ul>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg><span>Sees clinic counts and the analytics page.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12l5 5L20 7"/></svg><span>Approves a doctor only after that email is verified.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Rejects with a written reason. The doctor is emailed.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 19c1-3 3-4.5 6-4.5s5 1.5 6 4.5"/></svg><span>Views the patient list.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M8 12h8"/></svg><span>Cannot create or block another admin.</span></li>
+          </ul>
+        </article>
+        <article class="role super">
+          <div class="role-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3a3f4a" stroke-width="1.7"><path d="M12 3l2.2 4.6L19 8.2l-3.5 3.4.8 4.9L12 14.8 7.7 16.5l.8-4.9L5 8.2l4.8-.6L12 3z"/></svg>
+            <h3>Super admin</h3>
+          </div>
+          <p class="who">Same clinic desk as an admin, plus control of admin accounts.</p>
+          <ul>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg><span>Creates an admin account.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M8 8l8 8"/></svg><span>Blocks an admin so that person cannot sign in.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12l5 5L20 7"/></svg><span>Unblocks an admin when access should return.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7"/></svg><span>Uses the same doctor review, patients, and analytics pages.</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 3v6c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V6l8-3z"/></svg><span>Lands on /admin after sign-in, same as an admin.</span></li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="bottom">
+        <div>
+          <p class="section-label">VISIT STATUS</p>
+          <div class="badges">
+            <span class="badge pending"><i>○</i> Pending</span>
+            <span class="badge booked"><i>✓</i> Booked</span>
+            <span class="badge done"><i>★</i> Completed</span>
+            <span class="badge cancel"><i>×</i> Cancelled</span>
+            <span class="badge refund"><i>↩</i> Refunded</span>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <span>PH Healthcare clinic</span>
+        <span>Open this page full screen, then present</span>
+      </footer>
+    </main>
+  </body>
+</html>
