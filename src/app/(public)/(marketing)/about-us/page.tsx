@@ -45,7 +45,7 @@ export default function AboutUsPage() {
           See the doctor directory
         </Link>
       </div>
-      <div className="rise-in rise-in-late overflow-hidden rounded-lg shadow-sm">
+      <div className="rise-in rise-in-late overflow-hidden rounded-3xl shadow-sm">
         <img
           src="/clinic/clinic-consult.jpg"
           alt="Private consultation room"

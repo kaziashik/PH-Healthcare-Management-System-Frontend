@@ -66,7 +66,13 @@ function loadFacebookSdk(clientId: string) {
   });
 }
 
-export default function FacebookLoginButton() {
+export default function FacebookLoginButton({
+  className,
+  label = "Continue with Facebook",
+}: {
+  className?: string;
+  label?: string;
+}) {
   const router = useRouter();
   const continueAfterAuth = useContinueAfterAuth();
   const { mutate: facebookLogin, isPending } = useFacebookOAuth();
@@ -145,12 +151,12 @@ export default function FacebookLoginButton() {
     <Button
       type="button"
       variant="outline"
-      className="w-full"
+      className={className ? `w-full ${className}` : "w-full"}
       disabled={busy}
       onClick={onClick}
     >
-      {busy ? <Spinner /> : null}
-      Continue with Facebook
+      {busy ? <Spinner /> : <span aria-hidden="true">f</span>}
+      {label}
     </Button>
   );
 }

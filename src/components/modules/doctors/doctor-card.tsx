@@ -29,14 +29,16 @@ export default function DoctorCard({ doctor }: { doctor: Doctor }) {
   const photo = photoFailed ? "" : doctorPhoto(doctor);
 
   return (
-    <article className="panel flex min-h-80 flex-col transition-colors hover:-translate-y-0.5 hover:border-primary/40">
+    <article className="group panel flex min-h-80 flex-col bg-card shadow-sm transition duration-300 motion-safe:hover:-translate-y-2 motion-safe:hover:border-[#14b8a6]/60 motion-safe:hover:shadow-[0_22px_50px_rgba(6,40,47,0.22)]">
       {photo ? (
-        <img
-          src={photo}
-          alt={`${doctor.name}, ${doctor.specialization} physician`}
-          className="aspect-[5/4] w-full object-cover object-top"
-          onError={() => setPhotoFailed(true)}
-        />
+        <div className="overflow-hidden">
+          <img
+            src={photo}
+            alt={`${doctor.name}, ${doctor.specialization} physician`}
+            className="aspect-[5/4] w-full object-cover object-top transition duration-700 ease-out motion-safe:group-hover:scale-105"
+            onError={() => setPhotoFailed(true)}
+          />
+        </div>
       ) : (
         <div
           aria-hidden="true"
@@ -58,7 +60,7 @@ export default function DoctorCard({ doctor }: { doctor: Doctor }) {
           {doctor.experienceYears === 1 ? "year" : "years"}
         </p>
         <Button
-          className="mt-auto"
+          className="mt-auto transition duration-300 motion-safe:group-hover:bg-[#0f766e]"
           nativeButton={false}
           render={<Link href={`/doctors/${doctor.id}`}>View details</Link>}
         >

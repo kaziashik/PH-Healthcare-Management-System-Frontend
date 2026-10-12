@@ -1,11 +1,11 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { Menu, X } from "lucide-react";
+import { Menu, Stethoscope, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import Logo from "@/assets/svg/Logo";
+import AccountPill from "@/components/layout/account-pill";
 import ThemeToggle from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
@@ -33,9 +33,11 @@ const profileRoute: Record<UserRole, string> = {
   PATIENT: "/patient/profile",
 };
 
+const barButton =
+  "border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white";
+
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const [accountOpen, setAccountOpen] = useState(false);
   const pathname = usePathname();
   const { data, isLoading } = useGetMe();
   const { mutate: logout } = useLogout();
@@ -52,7 +54,6 @@ export default function Header() {
           type: "success",
         });
         queryClient.removeQueries({ queryKey: ["user"] });
-        setAccountOpen(false);
         setOpen(false);
       },
       onError: () => {
@@ -66,16 +67,13 @@ export default function Header() {
   };
 
   useEffect(() => {
-    if (!open && !accountOpen) return;
+    if (!open) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-        setAccountOpen(false);
-      }
+      if (event.key === "Escape") setOpen(false);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, accountOpen]);
+  }, [open]);
 
   const links = role
     ? [
@@ -87,93 +85,79 @@ export default function Header() {
     : publicLinks;
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Logo />
+    <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#06282f] text-white">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+        <Link href="/" className="flex items-center gap-2.5 font-semibold tracking-tight">
+          <span className="flex size-9 items-center justify-center rounded-full bg-[#14b8a6] text-[#042028]">
+            <Stethoscope className="size-5" aria-hidden="true" />
+          </span>
           <span>PH Healthcare</span>
         </Link>
 
-        <nav className="hidden items-center gap-5 md:flex">
-          {links.map((link) => (
-            <Link
-              key={link.url}
-              href={link.url}
-              aria-current={pathname === link.url ? "page" : undefined}
-              className={`text-sm font-medium transition-colors hover:text-foreground ${pathname === link.url ? "text-primary" : "text-foreground/75"}`}
-            >
-              {link.name}
-            </Link>
-          ))}
+        <nav className="hidden items-center gap-1 md:flex">
+          {links.map((link) => {
+            const current =
+              link.url === "/"
+                ? pathname === "/"
+                : pathname === link.url || pathname.startsWith(`${link.url}/`);
+            return (
+              <Link
+                key={link.url}
+                href={link.url}
+                aria-current={current ? "page" : undefined}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${current ? "bg-white/15 text-white" : "text-white/75 hover:bg-white/10 hover:text-white"}`}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <ThemeToggle />
+          <ThemeToggle className={barButton} />
           {isLoading ? null : user && role ? (
-            <div className="relative">
-              <Button
-                type="button"
-                variant="outline"
-                aria-expanded={accountOpen}
-                aria-haspopup="menu"
-                onClick={() => setAccountOpen((current) => !current)}
-              >
-                {user.name}
-              </Button>
-              {accountOpen ? (
-                <div
-                  role="menu"
-                  className="absolute right-0 mt-2 w-48 rounded-lg border bg-popover p-1 text-popover-foreground shadow-md"
-                >
-                  <Link
-                    href={profileRoute[role]}
-                    className="block rounded-md px-3 py-2 text-sm hover:bg-muted"
-                    onClick={() => setAccountOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    href="/change-password"
-                    className="block rounded-md px-3 py-2 text-sm hover:bg-muted"
-                    onClick={() => setAccountOpen(false)}
-                  >
-                    Change password
-                  </Link>
-                  <button
-                    type="button"
-                    className="block w-full rounded-md px-3 py-2 text-left text-sm hover:bg-muted"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </button>
-                </div>
-              ) : null}
-            </div>
+            <AccountPill
+              name={user.name}
+              email={user.email}
+              role={role}
+              onLogout={handleLogout}
+            />
           ) : (
             <>
               <Button
+                variant="outline"
+                className="h-10 rounded-full border-white/25 bg-[#08343c] px-4 text-white hover:bg-[#0c4250] hover:text-white"
+                nativeButton={false}
+                render={<Link href="/login">Login</Link>}
+              >
+                Login
+              </Button>
+              <Button
+                className="rounded-full bg-white text-[#06282f] hover:bg-white/90"
                 nativeButton={false}
                 render={<Link href="/doctors">Find a doctor</Link>}
               >
                 Find a doctor
-              </Button>
-              <Button
-                variant="outline"
-                render={<Link href="/login">Login</Link>}
-                nativeButton={false}
-              >
-                Login
               </Button>
             </>
           )}
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
-          <ThemeToggle />
+          {user && role ? (
+            <AccountPill
+              name={user.name}
+              email={user.email}
+              role={role}
+              onLogout={handleLogout}
+            />
+          ) : null}
+          <ThemeToggle className={barButton} />
           <Button
             type="button"
             variant="outline"
             size="icon"
+            className={barButton}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen((current) => !current)}
@@ -184,12 +168,12 @@ export default function Header() {
       </div>
 
       {open ? (
-        <nav className="flex flex-col gap-2 border-t px-4 py-4 md:hidden">
+        <nav className="flex flex-col gap-2 border-t border-white/10 px-4 py-4 md:hidden">
           {links.map((link) => (
             <Link
               key={link.url}
               href={link.url}
-              className="rounded-md px-3 py-3 text-sm font-medium hover:bg-muted"
+              className="rounded-md px-3 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
               onClick={() => setOpen(false)}
             >
               {link.name}
@@ -199,14 +183,14 @@ export default function Header() {
             <>
               <Link
                 href={profileRoute[role]}
-                className="rounded-md px-3 py-3 text-sm font-medium hover:bg-muted"
+                className="rounded-md px-3 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
                 onClick={() => setOpen(false)}
               >
                 Profile
               </Link>
               <button
                 type="button"
-                className="rounded-md px-3 py-3 text-left text-sm font-medium hover:bg-muted"
+                className="rounded-md px-3 py-3 text-left text-sm font-medium text-white/90 hover:bg-white/10"
                 onClick={handleLogout}
               >
                 Logout
@@ -215,7 +199,7 @@ export default function Header() {
           ) : (
             <Link
               href="/login"
-              className="rounded-md px-3 py-3 text-sm font-medium hover:bg-muted"
+              className="rounded-md px-3 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
               onClick={() => setOpen(false)}
             >
               Login

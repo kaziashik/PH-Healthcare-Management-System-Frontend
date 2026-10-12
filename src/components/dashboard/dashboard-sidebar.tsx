@@ -1,15 +1,27 @@
 "use client";
 
+import {
+  BadgeCheck,
+  CalendarCheck,
+  CalendarClock,
+  CalendarPlus,
+  ChartColumn,
+  KeyRound,
+  LayoutDashboard,
+  ShieldCheck,
+  UserRound,
+  Users,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Logo from "@/assets/svg/Logo";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -26,38 +38,58 @@ const sidebarRoutes: Partial<Record<UserRole, SidebarItems>> = {
   PATIENT: patientRoutes,
 };
 
+const itemIcons: Record<string, LucideIcon> = {
+  Overview: LayoutDashboard,
+  "Doctor Approval": BadgeCheck,
+  Patients: Users,
+  Admins: ShieldCheck,
+  Analytics: ChartColumn,
+  Schedules: CalendarClock,
+  Appointments: CalendarCheck,
+  Book: CalendarPlus,
+  Payments: Wallet,
+  Profile: UserRound,
+  "Change Password": KeyRound,
+};
+
 export function DashboardSidebar({ role }: { role: UserRole }) {
   const pathname = usePathname();
   const routes: SidebarItems = sidebarRoutes[role] || [];
 
-  console.log(pathname);
-
   return (
     <Sidebar>
-      <SidebarHeader>
-        <Link href="/">
-          <div className="flex items-center gap-2">
-            <Logo />
-            <span>PH Healthcare</span>
-          </div>
-        </Link>
-      </SidebarHeader>
-      <SidebarContent>
-        {routes.map((item) => (
-          <SidebarGroup key={item.title}>
-            <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+      <SidebarContent className="gap-4 px-2 pt-4">
+        {routes.map((group) => (
+          <SidebarGroup key={group.title} className="p-0">
+            <SidebarGroupLabel className="h-7 px-3 text-[11px] font-semibold tracking-[0.14em] text-sidebar-foreground/50 uppercase">
+              {group.title}
+            </SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu>
-                {item.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      render={<Link href={item.url} />}
-                      isActive={pathname === item.url}
-                    >
-                      {item.title}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+              <SidebarMenu className="gap-1">
+                {group.items.map((item) => {
+                  const Icon = itemIcons[item.title] ?? LayoutDashboard;
+                  const current = pathname === item.url;
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        render={<Link href={item.url} />}
+                        isActive={current}
+                        className="h-10 rounded-lg px-2.5"
+                      >
+                        <span
+                          className={`flex size-7 items-center justify-center rounded-md ${
+                            current
+                              ? "bg-primary/15 text-primary"
+                              : "bg-sidebar-accent text-sidebar-foreground/70"
+                          }`}
+                        >
+                          <Icon aria-hidden="true" />
+                        </span>
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

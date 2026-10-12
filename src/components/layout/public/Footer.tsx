@@ -1,4 +1,6 @@
+import { HeartPulse } from "lucide-react";
 import Link from "next/link";
+import Logo from "@/assets/svg/Logo";
 
 const groups = [
   {
@@ -38,8 +40,8 @@ const scenes = [
 
 export default function Footer() {
   return (
-    <footer className="border-t bg-card">
-      <div className="overflow-hidden border-b" aria-label="Clinic rooms">
+    <footer className="bg-[#07141c] text-slate-300">
+      <div className="overflow-hidden border-b border-white/10" aria-label="Clinic rooms">
         <div className="clinic-slide flex w-max gap-3 px-3 py-4">
           {["first", "repeat"].map((copy) => (
             <div
@@ -52,34 +54,43 @@ export default function Footer() {
                   key={`${copy}-${scene.src}`}
                   src={scene.src}
                   alt={copy === "first" ? scene.alt : ""}
-                  className="h-36 w-64 rounded-lg object-cover sm:h-44 sm:w-80"
+                  className="h-28 w-52 rounded-xl object-cover sm:h-36 sm:w-72"
                 />
               ))}
             </div>
           ))}
         </div>
       </div>
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 md:grid-cols-4 md:py-16">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-4">
         <div>
-          <p className="font-semibold">PH Healthcare</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Same-day doctor visits, bKash payment, and prescriptions for
-            patients in Bangladesh.
+          <Link href="/" className="flex items-center gap-2 font-semibold text-white">
+            <span className="flex size-9 items-center justify-center overflow-hidden rounded-full bg-white/10">
+              <span className="scale-[0.72]">
+                <Logo id="footer" />
+              </span>
+            </span>
+            PH Healthcare
+          </Link>
+          <p className="mt-4 text-sm leading-6">
+            Same-day visits with approved doctors. Pay the consultation fee
+            with bKash and receive a 20-minute serial.
           </p>
-          <p className="mt-3 text-sm text-muted-foreground">
-            Write to the clinic from the contact page. Visits are booked only
-            through an open schedule.
+          <p className="mt-4 flex items-center gap-2 text-sm text-slate-400">
+            <HeartPulse className="size-4 text-[#5eead4]" aria-hidden="true" />
+            Booking stays on an open schedule.
           </p>
         </div>
         {groups.map((group) => (
           <div key={group.title}>
-            <p className="font-semibold">{group.title}</p>
-            <ul className="mt-3 space-y-2">
+            <p className="text-sm font-semibold tracking-wide text-white">
+              {group.title}
+            </p>
+            <ul className="mt-4 space-y-2.5">
               {group.links.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground"
+                    className="text-sm transition-colors hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -89,8 +100,8 @@ export default function Footer() {
           </div>
         ))}
       </div>
-      <div className="border-t px-4 py-4 text-center text-sm text-muted-foreground">
-        PH Healthcare. Payments are processed by bKash.
+      <div className="border-t border-white/10 px-4 py-4 text-center text-sm text-slate-500">
+        PH Healthcare. Consultation fees are paid through bKash.
       </div>
     </footer>
   );

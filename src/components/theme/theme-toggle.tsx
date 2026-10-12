@@ -14,7 +14,7 @@ export function ThemeInit() {
   return null;
 }
 
-export default function ThemeToggle() {
+export default function ThemeToggle({ className = "" }: { className?: string }) {
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
@@ -33,6 +33,7 @@ export default function ThemeToggle() {
       type="button"
       variant="outline"
       size="icon"
+      className={`rounded-full ${className}`}
       aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
       onClick={toggle}
     >

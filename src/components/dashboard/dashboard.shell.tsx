@@ -1,11 +1,7 @@
 import type { ReactNode } from "react";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { UserRole } from "@/types";
-import AccountMenu from "./account-menu";
+import DashboardHeader from "./dashboard-header";
 import { DashboardSidebar } from "./dashboard-sidebar";
 
 export default function DashboardShell({
@@ -16,15 +12,14 @@ export default function DashboardShell({
   role: UserRole;
 }) {
   return (
-    <SidebarProvider>
-      <DashboardSidebar role={role} />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 sm:px-6">
-          <SidebarTrigger className="-ml-1" />
-          <AccountMenu />
-        </header>
-        <div className="flex flex-1 flex-col px-4 py-6 sm:px-6">{children}</div>
-      </SidebarInset>
+    <SidebarProvider className="flex-col">
+      <DashboardHeader role={role} />
+      <div className="flex min-h-0 w-full flex-1">
+        <DashboardSidebar role={role} />
+        <SidebarInset>
+          <div className="flex flex-1 flex-col px-4 py-6 sm:px-6">{children}</div>
+        </SidebarInset>
+      </div>
     </SidebarProvider>
   );
 }

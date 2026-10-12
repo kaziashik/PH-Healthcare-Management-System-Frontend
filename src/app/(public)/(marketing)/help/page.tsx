@@ -21,14 +21,15 @@ const topics = [
 export default function HelpPage() {
   return (
     <section className="mx-auto max-w-3xl px-4 py-14 sm:px-6 md:py-16">
-      <h1 className="text-3xl font-bold tracking-tight">Help</h1>
+      <p className="text-sm font-medium text-primary">Clinic guide</p>
+      <h1 className="mt-2 text-3xl font-semibold tracking-tight">Help</h1>
       <div className="mt-6 flex flex-col gap-4">
         {topics.map((topic) => (
           <article key={topic.title} className="panel p-4">
             <h2 className="font-semibold">{topic.title}</h2>
             <p className="mt-2 text-sm text-muted-foreground">{topic.text}</p>
             <Link
-              className="mt-3 inline-block text-sm underline underline-offset-4"
+              className="mt-3 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline"
               href={topic.href}
             >
               Open

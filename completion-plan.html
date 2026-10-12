@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PH Healthcare — frontend completion plan</title>
+  <style>
+    :root {
+      --ink: #142033;
+      --muted: #5c6b80;
+      --line: #d7e0ea;
+      --paper: #f4f7fb;
+      --card: #ffffff;
+      --blue: #1d4ed8;
+      --green: #157a45;
+      --green-soft: #e7f6ee;
+      --amber: #9a6700;
+      --amber-soft: #fff6df;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.5;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #0f2744;
+      color: #fff;
+      padding: 20px 16px 16px;
+    }
+
+    .wrap { max-width: 860px; margin: 0 auto; }
+
+    header h1 { margin: 0 0 6px; font-size: 1.45rem; }
+    header p { margin: 0; color: #c9d7ea; font-size: 0.95rem; }
+
+    .bar-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+      font-size: 0.9rem;
+    }
+
+    .track {
+      height: 12px;
+      margin-top: 8px;
+      border-radius: 999px;
+      background: #234266;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      width: 0;
+      background: #7ddea8;
+      border-radius: inherit;
+      transition: width 0.25s ease;
+    }
+
+    main { padding: 20px 16px 48px; }
+
+    .tools { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+
+    button, .note-toggle {
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button[aria-pressed="true"] {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
+    .danger { color: #9f1239; }
+
+    .patch {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    .patch h2 { margin: 0; padding: 14px 16px 4px; font-size: 1.05rem; }
+
+    .patch .hint {
+      margin: 0;
+      padding: 0 16px 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px 12px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .task.done .title { color: var(--muted); text-decoration: line-through; }
+    .task input { width: 1.15rem; height: 1.15rem; margin-top: 3px; }
+    .title { font-weight: 650; }
+    .detail { color: var(--muted); font-size: 0.9rem; margin-top: 2px; }
+
+    .tag {
+      display: inline-block;
+      margin-top: 6px;
+      margin-right: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 650;
+    }
+
+    .tag.built { background: var(--green-soft); color: var(--green); }
+    .tag.open { background: var(--amber-soft); color: var(--amber); }
+
+    textarea {
+      grid-column: 2;
+      width: 100%;
+      min-height: 64px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+      font: inherit;
+      resize: vertical;
+    }
+
+    .hidden { display: none; }
+    .saved { color: var(--muted); font-size: 0.85rem; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>PH Healthcare frontend plan</h1>
+      <p>Follow the steps from the top. Checked items are already on the site. Open items are the clicks still left to do. Your checks and notes stay in this browser.</p>
+      <div class="bar-row">
+        <span id="count">0 of 0</span>
+        <span id="percent">0%</span>
+      </div>
+      <div class="track" aria-hidden="true"><div class="fill" id="fill"></div></div>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+      <div class="tools">
+        <button type="button" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" data-filter="open" aria-pressed="false">Still open</button>
+        <button type="button" data-filter="done" aria-pressed="false">Done</button>
+        <button type="button" id="reset" class="danger">Reset to the code check</button>
+      </div>
+      <div id="list"></div>
+      <p class="saved" id="saved">Not saved yet.</p>
+    </div>
+  </main>
+  <script>
+    const STORAGE_KEY = "ph-healthcare-frontend-plan-v1";
+
+    const SEED = [
+      { id: "setup-install", patch: "1. Start the app", hint: "Get the Next.js app running before any screen.", title: "Install and start the frontend", detail: "From this folder run npm install, then npm run dev. The app opens at http://localhost:3000.", done: true, kind: "built" },
+      { id: "setup-env", patch: "1. Start the app", title: "Point the app at the API", detail: "Set NEXT_PUBLIC_API_BASE_URL in .env.local. Local is http://localhost:5000/api/v1. The live API is https://ph-healthcare-api.vercel.app/api/v1.", done: true, kind: "built" },
+      { id: "setup-google", patch: "1. Start the app", title: "Google button uses the client id", detail: "NEXT_PUBLIC_GOOGLE_CLIENT_ID shows the Google sign-in button. Leave it empty and the button stays hidden.", done: true, kind: "built" },
+
+      { id: "public-shell", patch: "2. Public site", hint: "What a visitor sees before signing in.", title: "Header, footer, and theme", detail: "Sticky header with Find a doctor and Login. Footer slides the clinic photos. Light and dark theme stays on this computer.", done: true, kind: "built" },
+      { id: "public-home", patch: "2. Public site", title: "Home page", detail: "Lobby photo, visit facts, approved doctors, specialties, and the clinic rooms. Route: /.", done: true, kind: "built" },
+      { id: "public-doctors", patch: "2. Public site", title: "Doctor directory", detail: "Search by name, then filter specialty, highest fee, and experience. Route: /doctors.", done: true, kind: "built" },
+      { id: "public-card", patch: "2. Public site", title: "Doctor card shows the portrait", detail: "Head-and-shoulders crop. If the photo fails, the card shows initials.", done: true, kind: "built" },
+      { id: "public-detail", patch: "2. Public site", title: "Doctor page", detail: "Portrait, fee, and today's bookable schedule. Route: /doctors/[doctorId].", done: true, kind: "built" },
+      { id: "public-pages", patch: "2. Public site", title: "About, journal, help, contact, privacy, and terms", detail: "Contact is a message to the clinic. It is not a booking.", done: true, kind: "built" },
+
+      { id: "auth-register", patch: "3. Sign in", hint: "Patient, doctor apply, then the password screens.", title: "Patient register and email code", detail: "Register at /register, then enter the 6-digit code at /register/verify-account.", done: true, kind: "built" },
+      { id: "auth-login", patch: "3. Sign in", title: "Login and role redirect", detail: "A patient opens /patient, a doctor opens /doctor, and an admin opens /admin. Must-change-password opens /change-password first.", done: true, kind: "built" },
+      { id: "auth-google", patch: "3. Sign in", title: "Google sign-in for patients", detail: "The same patient account, matched by email. A Google patient with no password is sent to /patient/profile to set one.", done: true, kind: "built" },
+      { id: "auth-reset", patch: "3. Sign in", title: "Forgot password and reset", detail: "/forgot-password emails a code. /reset-password submits the code and a new password.", done: true, kind: "built" },
+      { id: "auth-apply", patch: "3. Sign in", title: "Doctor apply screen", detail: "/apply sends the resume and profile, then the email code. The doctor cannot use the dashboard until an admin approves them.", done: true, kind: "built" },
+      { id: "auth-password", patch: "3. Sign in", title: "Change password and set password", detail: "Change password asks for the current password. Set password is only for a Google patient.", done: true, kind: "built" },
+
+      { id: "patient-home", patch: "4. Patient", hint: "Book today, pay, then see the visit.", title: "Patient dashboard", detail: "Route: /patient. The sidebar stays on patient pages.", done: true, kind: "built" },
+      { id: "patient-book", patch: "4. Patient", title: "Book today's open schedule", detail: "Route: /patient/book. Only a published schedule for today, before it starts, with a slot left.", done: true, kind: "built" },
+      { id: "patient-pay", patch: "4. Patient", title: "Pay button opens bKash", detail: "The visit stays pending until the payment page returns success.", done: true, kind: "built" },
+      { id: "patient-list", patch: "4. Patient", title: "Appointments, cancel, and prescription link", detail: "Route: /patient/appointments. Cancel is on the visit. The prescription link appears after the doctor writes it.", done: true, kind: "built" },
+      { id: "patient-pay-list", patch: "4. Patient", title: "Payments and profile", detail: "Routes: /patient/payments and /patient/profile.", done: true, kind: "built" },
+
+      { id: "doctor-home", patch: "5. Doctor", hint: "Hours first, then the visit, then the prescription.", title: "Doctor dashboard", detail: "Route: /doctor.", done: true, kind: "built" },
+      { id: "doctor-schedule", patch: "5. Doctor", title: "Create and publish a schedule", detail: "Route: /doctor/schedules. One date, 3 to 8 hours, a meeting link, draft until publish.", done: true, kind: "built" },
+      { id: "doctor-visit", patch: "5. Doctor", title: "Mark ongoing, then completed", detail: "Route: /doctor/appointments.", done: true, kind: "built" },
+      { id: "doctor-rx", patch: "5. Doctor", title: "Write the prescription", detail: "The form opens only for a completed visit. Findings and at least one medicine.", done: true, kind: "built" },
+      { id: "doctor-profile", patch: "5. Doctor", title: "Doctor profile", detail: "Route: /doctor/profile. Fee, bio, address, and contact number.", done: true, kind: "built" },
+
+      { id: "admin-home", patch: "6. Admin", hint: "Approve people, then manage accounts.", title: "Admin dashboard and analytics", detail: "Routes: /admin and /admin/analytics.", done: true, kind: "built" },
+      { id: "admin-approve", patch: "6. Admin", title: "Approve or reject a doctor", detail: "Route: /admin/approve-doctor. A rejection needs a reason. Block and unblock is on the same doctor list.", done: true, kind: "built" },
+      { id: "admin-patients", patch: "6. Admin", title: "Patient list and block", detail: "Route: /admin/patients.", done: true, kind: "built" },
+      { id: "admin-admins", patch: "6. Admin", title: "Create an admin", detail: "Route: /admin/admins. Organization email is the login. Personal email gets the password.", done: true, kind: "built" },
+      { id: "admin-super", patch: "6. Admin", title: "Super admin creates a super admin and can block staff", detail: "An admin does not see those actions. A new staff account is sent to change the generated password.", done: true, kind: "built" },
+
+      { id: "walk-public", patch: "7. Click through what is left", hint: "The screens exist. These are the visits still to finish in the browser.", title: "Walk the public site", detail: "Open https://ph-healthcare-six.vercel.app, use Find a doctor, open one portrait, and send a contact message.", done: false, kind: "open" },
+      { id: "walk-patient", patch: "7. Click through what is left", title: "Register a patient and verify the email code", detail: "Finish /register and /register/verify-account, then land on /patient.", done: false, kind: "open" },
+      { id: "walk-pay", patch: "7. Click through what is left", title: "Book and finish one bKash payment", detail: "From /patient/book, pay, come back, and see the visit as booked with a serial. Do not check this if the payment page was left unfinished.", done: false, kind: "open" },
+      { id: "walk-cancel", patch: "7. Click through what is left", title: "Cancel once with a refund and once without", detail: "More than 1 hour before the start refunds. Inside that hour the visit closes and the fee stays.", done: false, kind: "open" },
+      { id: "walk-doctor", patch: "7. Click through what is left", title: "Publish today's hours, finish a visit, and open the prescription", detail: "Doctor publishes on /doctor/schedules, sets ongoing then completed, writes the prescription, and the patient opens it from appointments.", done: false, kind: "open" },
+      { id: "walk-admin", patch: "7. Click through what is left", title: "Approve one doctor and create one admin", detail: "Use /admin/approve-doctor and /admin/admins. Confirm a new admin is asked to change the generated password.", done: false, kind: "open" }
+    ];
+
+    const list = document.querySelector("#list");
+    const fill = document.querySelector("#fill");
+    const count = document.querySelector("#count");
+    const percent = document.querySelector("#percent");
+    const saved = document.querySelector("#saved");
+    let filter = "all";
+    let items = load();
+
+    function load() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return SEED.map((item) => ({ ...item, note: "" }));
+      try {
+        const stored = JSON.parse(raw);
+        return SEED.map((item) => {
+          const prev = stored.items && stored.items[item.id];
+          return {
+            ...item,
+            done: prev ? Boolean(prev.done) : item.done,
+            note: prev && prev.note ? String(prev.note) : "",
+          };
+        });
+      } catch {
+        return SEED.map((item) => ({ ...item, note: "" }));
+      }
+    }
+
+    function persist() {
+      const payload = { items: {} };
+      items.forEach((item) => {
+        payload.items[item.id] = { done: item.done, note: item.note };
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      saved.textContent = "Saved in this browser at " + new Date().toLocaleString() + ".";
+    }
+
+    function paintBar() {
+      const done = items.filter((item) => item.done).length;
+      const total = items.length;
+      const value = total ? Math.round((done / total) * 100) : 0;
+      fill.style.width = value + "%";
+      count.textContent = done + " of " + total + " steps";
+      percent.textContent = value + "%";
+    }
+
+    function render() {
+      list.innerHTML = "";
+      const patches = [];
+      items.forEach((item) => {
+        let patch = patches.find((entry) => entry.name === item.patch);
+        if (!patch) {
+          patch = { name: item.patch, hint: item.hint || "", tasks: [] };
+          patches.push(patch);
+        }
+        if (!patch.hint && item.hint) patch.hint = item.hint;
+        patch.tasks.push(item);
+      });
+
+      patches.forEach((patch) => {
+        const visible = patch.tasks.filter((item) => {
+          if (filter === "open") return !item.done;
+          if (filter === "done") return item.done;
+          return true;
+        });
+        if (!visible.length) return;
+
+        const section = document.createElement("section");
+        section.className = "patch";
+        const heading = document.createElement("h2");
+        heading.textContent = patch.name;
+        section.appendChild(heading);
+        if (patch.hint) {
+          const hint = document.createElement("p");
+          hint.className = "hint";
+          hint.textContent = patch.hint;
+          section.appendChild(hint);
+        }
+
+        visible.forEach((item) => {
+          const row = document.createElement("article");
+          row.className = "task" + (item.done ? " done" : "");
+
+          const box = document.createElement("input");
+          box.type = "checkbox";
+          box.checked = item.done;
+          box.id = item.id;
+          box.addEventListener("change", () => {
+            item.done = box.checked;
+            row.classList.toggle("done", item.done);
+            tag.textContent = item.done ? "Done" : "Still open";
+            tag.className = "tag " + (item.done ? "built" : "open");
+            persist();
+            paintBar();
+          });
+
+          const body = document.createElement("div");
+          const title = document.createElement("label");
+          title.className = "title";
+          title.htmlFor = item.id;
+          title.textContent = item.title;
+          const detail = document.createElement("div");
+          detail.className = "detail";
+          detail.textContent = item.detail;
+          const tag = document.createElement("span");
+          tag.className = "tag " + (item.done ? "built" : "open");
+          tag.textContent = item.done ? "Done" : "Still open";
+
+          const toggle = document.createElement("button");
+          toggle.type = "button";
+          toggle.className = "note-toggle";
+          toggle.textContent = item.note ? "Edit note" : "Add note";
+          toggle.style.marginLeft = "8px";
+
+          const note = document.createElement("textarea");
+          note.className = item.note ? "" : "hidden";
+          note.placeholder = "Note for later. This stays on this computer.";
+          note.value = item.note;
+          note.addEventListener("input", () => {
+            item.note = note.value;
+            toggle.textContent = "Edit note";
+            persist();
+          });
+          toggle.addEventListener("click", () => note.classList.toggle("hidden"));
+
+          body.append(title, detail, tag, toggle);
+          row.append(box, body, note);
+          section.appendChild(row);
+        });
+
+        list.appendChild(section);
+      });
+      paintBar();
+    }
+
+    document.querySelectorAll("[data-filter]").forEach((button) => {
+      button.addEventListener("click", () => {
+        filter = button.dataset.filter;
+        document.querySelectorAll("[data-filter]").forEach((other) => {
+          other.setAttribute("aria-pressed", String(other === button));
+        });
+        render();
+      });
+    });
+
+    document.querySelector("#reset").addEventListener("click", () => {
+      if (!confirm("Reset every check and note to the original code check?")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      items = SEED.map((item) => ({ ...item, note: "" }));
+      saved.textContent = "Reset. The original code check is showing.";
+      render();
+    });
+
+    render();
+    if (localStorage.getItem(STORAGE_KEY)) {
+      saved.textContent = "Loaded the checks saved in this browser.";
+    }
+  </script>
+</body>
+</html>

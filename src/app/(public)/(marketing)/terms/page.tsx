@@ -1,7 +1,9 @@
 export default function TermsPage() {
   return (
-    <section className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-14 sm:px-6 md:py-16">
-      <h1 className="text-3xl font-bold tracking-tight">Terms</h1>
+    <section className="mx-auto max-w-3xl px-4 py-14 sm:px-6 md:py-16">
+      <p className="text-sm font-medium text-primary">Clinic policy</p>
+      <div className="panel mt-4 flex flex-col gap-4 p-6">
+      <h1 className="text-3xl font-semibold tracking-tight">Terms</h1>
       <p className="text-sm leading-6 text-muted-foreground">
         A booking is confirmed when bKash reports a successful payment. The
         consultation fee shown on the doctor profile is the amount charged.
@@ -11,6 +13,7 @@ export default function TermsPage() {
         cancellation is more than one hour before the schedule starts. Doctors
         must be approved before a schedule can be offered to patients.
       </p>
+      </div>
     </section>
   );
 }

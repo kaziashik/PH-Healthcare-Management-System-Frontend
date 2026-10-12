@@ -18,7 +18,8 @@ const posts = [
 export default function JournalPage() {
   return (
     <section className="mx-auto max-w-3xl px-4 py-14 sm:px-6 md:py-16">
-      <h1 className="text-3xl font-bold tracking-tight">Journal</h1>
+      <p className="text-sm font-medium text-primary">From the clinic</p>
+      <h1 className="mt-2 text-3xl font-semibold tracking-tight">Journal</h1>
       <p className="mt-2 text-sm text-muted-foreground">
         Notes on how the clinic actually runs a visit.
       </p>
@@ -33,7 +34,7 @@ export default function JournalPage() {
         ))}
       </div>
       <Link
-        className="mt-6 inline-block text-sm underline underline-offset-4"
+        className="mt-6 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline"
         href="/doctors"
       >
         Find a doctor
