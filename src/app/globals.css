@@ -177,9 +177,29 @@
   animation: hero-ken 18s ease-in-out infinite alternate;
 }
 
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise-in {
+  animation: rise-in 0.7s ease both;
+}
+
+.rise-in-late {
+  animation-delay: 0.12s;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .clinic-slide,
-  .hero-ken {
+  .hero-ken,
+  .rise-in {
     animation: none;
   }
 }

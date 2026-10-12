@@ -1,40 +1,76 @@
 "use client";
 
-import { CalendarClock, Clock3, FileHeart, Wallet } from "lucide-react";
+import {
+  Baby,
+  Bone,
+  Brain,
+  CalendarClock,
+  Clock3,
+  Ear,
+  Eye,
+  Flower2,
+  Heart,
+  ShieldCheck,
+  Smile,
+  Sparkles,
+  Stethoscope,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useGetMe } from "@/hooks/auth.hook";
 import { useGetAllDoctors } from "@/hooks/doctor.hook";
 import DoctorCard, { DoctorCardSkeleton } from "../doctors/doctor-card";
 
-const services = [
-  {
-    title: "Same-day schedules",
-    text: "A doctor publishes a 3 to 8 hour window. Patients can book only before it starts.",
-    icon: CalendarClock,
-  },
-  {
-    title: "bKash checkout",
-    text: "Booking opens the bKash payment page. The visit is confirmed after payment succeeds.",
-    icon: Wallet,
-  },
-  {
-    title: "Serial slots",
-    text: "Each paid visit gets the next open 20-minute serial inside the schedule.",
-    icon: Clock3,
-  },
-  {
-    title: "Prescriptions",
-    text: "After a completed visit, the doctor records findings and medicines. The patient can open the prescription.",
-    icon: FileHeart,
-  },
-];
-
 const rules = [
   "A schedule stays on one calendar date.",
   "The date locks after the schedule is published.",
   "The time range locks after the first booking.",
   "Cancel more than 1 hour before the start time to receive a refund.",
+];
+
+const specialtyIcons: Record<string, LucideIcon> = {
+  Cardiology: Heart,
+  Orthopedics: Bone,
+  Pediatrics: Baby,
+  Dermatology: Sparkles,
+  Gynecology: Flower2,
+  Neurology: Brain,
+  Ophthalmology: Eye,
+  ENT: Ear,
+  Psychiatry: Smile,
+  "General Medicine": Stethoscope,
+};
+
+const facts = [
+  {
+    icon: CalendarClock,
+    label: "Same-day visits",
+    detail: "Book only before today's schedule starts",
+  },
+  {
+    icon: Clock3,
+    label: "20-minute serial",
+    detail: "Assigned after the bKash payment",
+  },
+  {
+    icon: Wallet,
+    label: "Consultation fee",
+    detail: "The amount shown on the doctor's card",
+  },
+  {
+    icon: ShieldCheck,
+    label: "1-hour refund",
+    detail: "Cancel earlier than that to be refunded",
+  },
+];
+
+const rooms = [
+  { src: "/clinic/clinic-reception.jpg", alt: "Bright clinic reception", title: "Reception" },
+  { src: "/clinic/clinic-consult.jpg", alt: "Private consultation room", title: "Consultation" },
+  { src: "/clinic/clinic-corridor.jpg", alt: "Quiet hospital corridor", title: "Corridor" },
+  { src: "/clinic/clinic-waiting.jpg", alt: "Waiting room with soft daylight", title: "Waiting room" },
 ];
 
 const questions = [
@@ -79,51 +115,80 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="mx-auto grid min-h-[70vh] max-w-7xl items-center gap-8 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:gap-12 lg:py-16">
-        <div>
-        <p className="text-sm font-medium tracking-normal text-primary">
-          PH Healthcare
-        </p>
-        <h1 className="mt-3 max-w-2xl text-3xl font-bold sm:text-4xl md:text-5xl">
-          See an approved doctor later today
-        </h1>
-        <p className="mt-4 max-w-xl text-base text-muted-foreground">
-          Choose a doctor, pay the consultation fee with bKash, and receive a
-          20-minute serial.
-        </p>
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button
-            nativeButton={false}
-            render={<Link href={primary.href}>{primary.label}</Link>}
-          >
-            {primary.label}
-          </Button>
-          {secondary ? (
-            <Button
-              variant="outline"
-              nativeButton={false}
-              render={<Link href={secondary.href}>{secondary.label}</Link>}
-            >
-              {secondary.label}
-            </Button>
-          ) : null}
-          {!role ? (
-            <Link
-              href="/apply"
-              className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
-            >
-              Apply as a doctor
-            </Link>
-          ) : null}
+      <section className="border-b bg-muted/30">
+        <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:gap-12 lg:py-16">
+          <div className="rise-in">
+            <p className="text-sm font-medium tracking-normal text-primary">
+              PH Healthcare
+            </p>
+            <h1 className="mt-3 max-w-xl text-4xl font-bold tracking-tight sm:text-5xl">
+              See an approved doctor later today
+            </h1>
+            <p className="mt-4 max-w-xl text-base text-muted-foreground">
+              Choose a doctor, pay the consultation fee with bKash, and receive
+              a 20-minute serial.
+            </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Button
+                nativeButton={false}
+                render={<Link href={primary.href}>{primary.label}</Link>}
+              >
+                {primary.label}
+              </Button>
+              {secondary ? (
+                <Button
+                  variant="outline"
+                  nativeButton={false}
+                  render={<Link href={secondary.href}>{secondary.label}</Link>}
+                >
+                  {secondary.label}
+                </Button>
+              ) : null}
+              {!role ? (
+                <Link
+                  href="/apply"
+                  className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+                >
+                  Apply as a doctor
+                </Link>
+              ) : null}
+            </div>
+          </div>
+          <div className="rise-in rise-in-late relative h-80 overflow-hidden rounded-lg shadow-sm sm:h-[28rem]">
+            <img
+              src="/clinic/hero-hospital.jpg"
+              alt="Bright hospital lobby with a wood reception desk"
+              className="hero-ken h-full w-full object-cover"
+            />
+          </div>
         </div>
-        </div>
-        <div className="h-72 overflow-hidden rounded-lg sm:h-96 lg:h-[28rem]">
-          <img
-            src="/clinic/hero-hospital.jpg"
-            alt="Bright hospital lobby with a wood reception desk"
-            className="hero-ken h-full w-full object-cover"
-          />
-        </div>
+      </section>
+
+      <section className="border-b bg-card">
+        <ul className="mx-auto grid max-w-7xl gap-4 px-4 py-6 sm:px-6 sm:grid-cols-2 lg:grid-cols-4">
+          {facts.map((fact, index) => {
+            const Icon = fact.icon;
+            return (
+              <li
+                key={fact.label}
+                className="rise-in flex items-start gap-3"
+                style={{ animationDelay: `${index * 80}ms` }}
+              >
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Icon className="size-5" aria-hidden="true" />
+                </span>
+                <span>
+                  <span className="block text-sm font-semibold">
+                    {fact.label}
+                  </span>
+                  <span className="block text-sm text-muted-foreground">
+                    {fact.detail}
+                  </span>
+                </span>
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
       <section className="border-t bg-muted/40">
@@ -158,10 +223,10 @@ export default function HomePage() {
         <div className="mb-5 flex items-end justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold tracking-tight">
-              Approved doctors
+              Doctors open for booking
             </h2>
             <p className="text-sm text-muted-foreground">
-              Profiles currently open for booking.
+              A few approved physicians. The full roster is on the doctors page.
             </p>
           </div>
           <Link
@@ -179,82 +244,92 @@ export default function HomePage() {
           </div>
         ) : null}
         {doctors.isError ? (
-          <p className="text-sm text-destructive">Could not load doctors.</p>
+          <p className="text-sm text-destructive">
+            Doctors could not be loaded right now. Refresh the page when the
+            clinic API is available.
+          </p>
         ) : null}
-        {!doctors.isPending && (doctors.data?.data.length ?? 0) === 0 ? (
+        {!doctors.isPending &&
+        !doctors.isError &&
+        (doctors.data?.data.length ?? 0) === 0 ? (
           <p className="text-sm text-muted-foreground">
             No approved doctors are listed yet.
           </p>
         ) : null}
         {(doctors.data?.data.length ?? 0) > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {doctors.data?.data.map((doctor) => (
+            {doctors.data?.data.slice(0, 6).map((doctor) => (
               <DoctorCard key={doctor.id} doctor={doctor} />
             ))}
           </div>
         ) : null}
       </section>
 
-      <section className="border-t">
-        <div className="mx-auto grid max-w-7xl gap-4 px-4 py-14 sm:px-6 md:grid-cols-2 md:py-16 lg:grid-cols-4">
-          {services.map((service) => {
-            const Icon = service.icon;
-            return (
-            <article key={service.title} className="panel p-4">
-              <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <Icon className="size-5" aria-hidden="true" />
-              </div>
-              <h2 className="font-semibold">{service.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {service.text}
+      <section className="border-t bg-muted/30">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
+          <h2 className="text-2xl font-bold tracking-tight">
+            Specialties on the roster
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Each specialty opens the directory already filtered.
+          </p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {doctors.isPending ? (
+              <p className="text-sm text-muted-foreground">
+                Loading specialties…
               </p>
-            </article>
-            );
-          })}
+            ) : doctors.isError ? (
+              <p className="text-sm text-muted-foreground">
+                Specialties show here when the directory loads.
+              </p>
+            ) : specialties.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Specialties appear here after a doctor is approved.
+              </p>
+            ) : (
+              specialties.map((item) => {
+                const Icon = specialtyIcons[item] ?? Stethoscope;
+                return (
+                  <Link
+                    key={item}
+                    href={`/doctors?specialty=${encodeURIComponent(item)}`}
+                    className="panel flex items-center gap-3 p-4 transition-colors hover:border-primary/40"
+                  >
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <Icon className="size-5" aria-hidden="true" />
+                    </span>
+                    <span className="text-sm font-medium">{item}</span>
+                  </Link>
+                );
+              })
+            )}
+          </div>
         </div>
       </section>
 
-      <section className="bg-primary text-primary-foreground">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-14 sm:px-6 md:grid-cols-3 md:py-16">
-          <div>
-            <p className="text-3xl font-bold">
-              {doctors.data?.meta?.total ?? "—"}
-            </p>
-            <p className="text-sm">Approved doctors in the directory</p>
+      <section>
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
+          <h2 className="text-2xl font-bold tracking-tight">Inside the clinic</h2>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Reception, consultation rooms, and the waiting area patients see
+            before a serial.
+          </p>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {rooms.map((room) => (
+              <figure key={room.src} className="panel">
+                <div className="h-44 overflow-hidden">
+                  <img
+                    src={room.src}
+                    alt={room.alt}
+                    className="h-full w-full object-cover transition duration-700 motion-safe:hover:scale-105"
+                  />
+                </div>
+                <figcaption className="px-4 py-3 text-sm font-medium">
+                  {room.title}
+                </figcaption>
+              </figure>
+            ))}
           </div>
-          <div>
-            <p className="text-3xl font-bold">20 min</p>
-            <p className="text-sm">Length of each booked serial</p>
-          </div>
-          <div>
-            <p className="text-3xl font-bold">1 hour</p>
-            <p className="text-sm">
-              Latest moment a cancellation can be refunded
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-        <h2 className="text-2xl font-bold tracking-tight">
-          Specialties on the roster
-        </h2>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {specialties.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Specialties appear here after a doctor is approved.
-            </p>
-          ) : (
-            specialties.map((item) => (
-              <Link
-                key={item}
-                href={`/doctors?specialty=${encodeURIComponent(item)}`}
-                className="rounded-lg border px-3 py-2 text-sm hover:bg-muted focus-visible:bg-muted"
-              >
-                {item}
-              </Link>
-            ))
-          )}
         </div>
       </section>
 

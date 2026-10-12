@@ -100,7 +100,7 @@ export default function Header() {
               key={link.url}
               href={link.url}
               aria-current={pathname === link.url ? "page" : undefined}
-              className={`text-sm font-medium hover:text-foreground ${pathname === link.url ? "text-foreground" : "text-foreground/75"}`}
+              className={`text-sm font-medium transition-colors hover:text-foreground ${pathname === link.url ? "text-primary" : "text-foreground/75"}`}
             >
               {link.name}
             </Link>
@@ -150,13 +150,21 @@ export default function Header() {
               ) : null}
             </div>
           ) : (
-            <Button
-              variant="outline"
-              render={<Link href="/login">Login</Link>}
-              nativeButton={false}
-            >
-              Login
-            </Button>
+            <>
+              <Button
+                nativeButton={false}
+                render={<Link href="/doctors">Find a doctor</Link>}
+              >
+                Find a doctor
+              </Button>
+              <Button
+                variant="outline"
+                render={<Link href="/login">Login</Link>}
+                nativeButton={false}
+              >
+                Login
+              </Button>
+            </>
           )}
         </div>
 
