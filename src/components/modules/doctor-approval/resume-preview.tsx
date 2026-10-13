@@ -7,9 +7,8 @@ import { createPortal } from "react-dom";
 
 const MAX_PAGES = 8;
 
-function displayFileName(doctorName: string) {
-  const safeName = doctorName.trim().replace(/\s+/g, "_") || "Doctor";
-  return `${safeName}_CV.pdf`;
+function isDirectImage(url: string) {
+  return /\.(png|jpe?g|webp|gif|bmp|avif)(\?|$)/i.test(url);
 }
 
 function cloudinaryPageUrl(url: string, page: number) {
@@ -54,6 +53,15 @@ function useResumePages(url: string) {
 
     setPages([]);
     setStatus("loading");
+    if (isDirectImage(url)) {
+      setPages([url]);
+      setStatus("ready");
+      return;
+    }
+    if (!/\.pdf(\?|$)/i.test(url)) {
+      setStatus("missing");
+      return;
+    }
     loadPage(1);
 
     return () => {
@@ -67,12 +75,14 @@ function useResumePages(url: string) {
 export default function ResumePreview({
   open,
   url,
-  doctorName,
+  title,
+  fileName,
   onClose,
 }: {
   open: boolean;
   url: string | null;
-  doctorName: string;
+  title: string;
+  fileName: string;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -90,22 +100,28 @@ export default function ResumePreview({
   if (!open || !url || typeof document === "undefined") return null;
 
   return createPortal(
-    <ResumeWindow url={url} doctorName={doctorName} onClose={onClose} />,
+    <ResumeWindow
+      url={url}
+      title={title}
+      fileName={fileName}
+      onClose={onClose}
+    />,
     document.body,
   );
 }
 
 function ResumeWindow({
   url,
-  doctorName,
+  title,
+  fileName,
   onClose,
 }: {
   url: string;
-  doctorName: string;
+  title: string;
+  fileName: string;
   onClose: () => void;
 }) {
   const { pages, status } = useResumePages(url);
-  const fileName = displayFileName(doctorName);
   const openTarget = pages[0] ?? url;
 
   const download = async () => {
@@ -137,12 +153,12 @@ function ResumeWindow({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={`${doctorName} CV`}
+        aria-label={title}
         className="relative flex h-[min(92vh,960px)] w-full max-w-5xl flex-col overflow-hidden rounded-xl border bg-background shadow-2xl"
       >
         <div className="flex items-center gap-3 border-b px-4 py-3">
           <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold">{doctorName} CV</p>
+            <p className="truncate font-semibold">{title}</p>
             <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-muted-foreground">
               <FileText className="size-3.5 shrink-0" aria-hidden="true" />
               {fileName}
@@ -175,11 +191,11 @@ function ResumeWindow({
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto bg-neutral-200 p-4 sm:p-6">
           {status === "loading" ? (
-            <p className="text-center text-sm text-neutral-600">Opening resume...</p>
+            <p className="text-center text-sm text-neutral-600">Opening document...</p>
           ) : null}
           {status === "missing" ? (
             <iframe
-              title={`${doctorName} resume`}
+              title={title}
               src={url}
               className="h-full min-h-[70vh] w-full bg-white"
             />
@@ -188,7 +204,7 @@ function ResumeWindow({
             <img
               key={src}
               src={src}
-              alt={`${doctorName} resume page ${index + 1}`}
+              alt={`${title} page ${index + 1}`}
               className="mx-auto mb-4 w-full max-w-3xl bg-white shadow-md"
             />
           ))}

@@ -10,7 +10,24 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useApproveDoctor, useGetAllDoctors } from "@/hooks/doctor.hook";
 import type { ApproveDoctorPayload, Doctor, DoctorParams } from "@/types";
+import {
+  BadgeCheck,
+  Briefcase,
+  Check,
+  FileText,
+  Files,
+  GraduationCap,
+  Mail,
+  MapPin,
+  Phone,
+  Stethoscope,
+  UserRound,
+  Wallet,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { useState } from "react";
+import { doctorInitials } from "../doctors/doctor-card";
 import ResumePreview from "./resume-preview";
 
 interface Props extends DoctorParams {
@@ -19,13 +36,71 @@ interface Props extends DoctorParams {
   onClose: () => void;
 }
 
-function Detail({ label, value }: { label: string; value: string }) {
+function Detail({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+}) {
   return (
-    <div>
-      <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className="mt-0.5">{value || "—"}</dd>
+    <div className="flex gap-3 rounded-xl border bg-card/60 px-3 py-2.5">
+      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <Icon className="size-4" aria-hidden="true" />
+      </span>
+      <div className="min-w-0">
+        <dt className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+          {label}
+        </dt>
+        <dd className="mt-0.5 text-sm break-words">{value || "—"}</dd>
+      </div>
     </div>
   );
+}
+
+type ReviewDocument = {
+  url: string;
+  title: string;
+  fileName: string;
+  label: string;
+};
+
+function fileKind(url: string) {
+  const match = url.match(/\.([a-z0-9]+)(?:\?|$)/i);
+  return match?.[1]?.toUpperCase() ?? "FILE";
+}
+
+function reviewDocuments(doctor: Doctor): ReviewDocument[] {
+  const safeName = doctor.name.trim().replace(/\s+/g, "_") || "Doctor";
+  const documents: ReviewDocument[] = [];
+
+  if (doctor.resume) {
+    documents.push({
+      url: doctor.resume,
+      title: `${doctor.name} CV`,
+      fileName: `${safeName}_CV.pdf`,
+      label: "Resume",
+    });
+  }
+
+  const extras = Array.isArray(doctor.additionalFiles)
+    ? doctor.additionalFiles
+    : [];
+
+  extras.forEach((file, index) => {
+    if (!file?.url) return;
+    const kind = fileKind(file.url).toLowerCase();
+    documents.push({
+      url: file.url,
+      title: `${doctor.name} document ${index + 1}`,
+      fileName: `${safeName}_document_${index + 1}.${kind}`,
+      label: `Document ${index + 1}`,
+    });
+  });
+
+  return documents;
 }
 
 function profileRows(doctor: Doctor) {
@@ -35,17 +110,20 @@ function profileRows(doctor: Doctor) {
       : `৳${doctor.consultationFee}`;
 
   return [
-    ["Name", doctor.name],
-    ["Email", doctor.email],
-    ["License", doctor.licenseNumber],
-    ["Contact", doctor.contactNumber ?? ""],
-    ["Specialization", doctor.specialization],
-    ["Qualifications", doctor.qualifications],
-    ["Experience", `${doctor.experienceYears} years`],
-    ["Fee", fee],
-    ["Address", doctor.address ?? ""],
-    ["About", doctor.bio ?? ""],
-  ] as const;
+    { icon: Mail, label: "Email", value: doctor.email },
+    { icon: BadgeCheck, label: "License", value: doctor.licenseNumber },
+    { icon: Phone, label: "Contact", value: doctor.contactNumber ?? "" },
+    { icon: Stethoscope, label: "Specialization", value: doctor.specialization },
+    { icon: GraduationCap, label: "Qualifications", value: doctor.qualifications },
+    {
+      icon: Briefcase,
+      label: "Experience",
+      value: `${doctor.experienceYears} years`,
+    },
+    { icon: Wallet, label: "Fee", value: fee },
+    { icon: MapPin, label: "Address", value: doctor.address ?? "" },
+    { icon: UserRound, label: "About", value: doctor.bio ?? "" },
+  ];
 }
 
 export default function DoctorReviewSheet({
@@ -56,7 +134,7 @@ export default function DoctorReviewSheet({
 }: Props) {
   const [confirmRejection, setConfirmRejection] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
-  const [resumeOpen, setResumeOpen] = useState(false);
+  const [preview, setPreview] = useState<ReviewDocument | null>(null);
 
   const { data } = useGetAllDoctors(params);
   const { mutate: verify, isPending } = useApproveDoctor();
@@ -66,7 +144,7 @@ export default function DoctorReviewSheet({
   const handleClose = () => {
     setConfirmRejection(false);
     setRejectionReason("");
-    setResumeOpen(false);
+    setPreview(null);
     onClose();
   };
 
@@ -88,40 +166,79 @@ export default function DoctorReviewSheet({
     return null;
   }
 
+  const documents = reviewDocuments(selectedDoctor);
+
   return (
     <Sheet open={!!selectedId} onOpenChange={handleClose}>
-      <SheetContent side="left" className="w-full overflow-y-auto sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle>
+      <SheetContent
+        side="left"
+        className="w-full gap-0 p-0 sm:max-w-md"
+      >
+        <SheetHeader className="border-b">
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
             {canDecide ? "Review this application" : "Doctor profile"}
-          </SheetTitle>
-          <SheetDescription>
+          </p>
+          <div className="mt-3 flex items-center gap-3">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-base font-semibold text-primary">
+              {doctorInitials(selectedDoctor.name)}
+            </span>
+            <div className="min-w-0">
+              <SheetTitle className="truncate text-lg">
+                {selectedDoctor.name}
+              </SheetTitle>
+              <SheetDescription className="flex items-center gap-1.5">
+                <Stethoscope className="size-3.5" aria-hidden="true" />
+                {selectedDoctor.specialization}
+              </SheetDescription>
+            </div>
+          </div>
+          <p className="mt-3 text-sm text-muted-foreground">
             {canDecide
               ? "Approving makes this doctor active. They get an email, appear for patients, and can create a schedule."
               : "This doctor is approved and can be booked."}
-          </SheetDescription>
+          </p>
         </SheetHeader>
-        <dl className="grid gap-3 px-4">
-          {profileRows(selectedDoctor).map(([label, value]) => (
-            <Detail key={label} label={label} value={value} />
-          ))}
-          {selectedDoctor.resume ? (
-            <div>
-              <dt className="text-xs text-muted-foreground">Resume</dt>
-              <dd className="mt-0.5">
-                <button
-                  type="button"
-                  className="underline underline-offset-4"
-                  onClick={() => setResumeOpen(true)}
-                >
-                  Open resume
-                </button>
-              </dd>
-            </div>
-          ) : null}
-        </dl>
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          <dl className="grid gap-2">
+            {profileRows(selectedDoctor).map((row) => (
+              <Detail key={row.label} {...row} />
+            ))}
+          </dl>
+          <div className="mt-4">
+            <p className="mb-2 flex items-center gap-1.5 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+              <Files className="size-3.5" aria-hidden="true" />
+              Documents
+              <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] text-primary">
+                {documents.length}
+              </span>
+            </p>
+            {documents.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No documents uploaded.
+              </p>
+            ) : (
+              <div className="grid gap-2">
+                {documents.map((document, index) => (
+                  <Button
+                    key={`${document.url}-${index}`}
+                    type="button"
+                    variant="outline"
+                    className="w-full justify-start"
+                    onClick={() => setPreview(document)}
+                  >
+                    <FileText aria-hidden="true" />
+                    <span className="truncate">{document.label}</span>
+                    <span className="ml-auto text-xs text-muted-foreground">
+                      {fileKind(document.url)}
+                    </span>
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
         {canDecide ? (
-          <SheetFooter>
+          <SheetFooter className="border-t bg-background">
             {confirmRejection ? (
               <div className="flex flex-col gap-3">
                 <Textarea
@@ -146,6 +263,7 @@ export default function DoctorReviewSheet({
                     className="flex-1"
                     disabled={!rejectionReason.trim() || isPending}
                   >
+                    <X aria-hidden="true" />
                     Confirm rejection
                   </Button>
                 </div>
@@ -159,14 +277,16 @@ export default function DoctorReviewSheet({
                   className="flex-1"
                   disabled={isPending}
                 >
+                  <X aria-hidden="true" />
                   Reject
                 </Button>
                 <Button
                   onClick={() => handleReviewAction("APPROVED")}
                   size="lg"
-                  className="flex-1"
+                  className="flex-1 bg-[#0f766e] text-white hover:bg-[#115e59]"
                   disabled={isPending}
                 >
+                  <Check aria-hidden="true" />
                   Approve
                 </Button>
               </div>
@@ -175,10 +295,11 @@ export default function DoctorReviewSheet({
         ) : null}
       </SheetContent>
       <ResumePreview
-        open={resumeOpen}
-        url={selectedDoctor.resume ?? null}
-        doctorName={selectedDoctor.name}
-        onClose={() => setResumeOpen(false)}
+        open={!!preview}
+        url={preview?.url ?? null}
+        title={preview?.title ?? ""}
+        fileName={preview?.fileName ?? ""}
+        onClose={() => setPreview(null)}
       />
     </Sheet>
   );
