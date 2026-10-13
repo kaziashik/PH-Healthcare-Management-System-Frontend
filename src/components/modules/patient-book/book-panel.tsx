@@ -2,6 +2,10 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { useState } from "react";
+import UnpaidSlotNotice, {
+  isUnpaidDayError,
+} from "@/components/modules/patient-book/unpaid-slot-notice";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
@@ -20,6 +24,7 @@ function formatSlotTime(iso: string) {
 
 export default function BookPanel({ doctorId }: { doctorId?: string }) {
   const queryClient = useQueryClient();
+  const [unpaidScheduleId, setUnpaidScheduleId] = useState<string | null>(null);
   const doctor = useGetDoctor(doctorId ?? "");
   const slots = useGetDoctorOpenSlots(doctorId ?? "");
   const book = useBookAppointment();
@@ -66,6 +71,10 @@ export default function BookPanel({ doctorId }: { doctorId?: string }) {
           });
         },
         onError: (error) => {
+          if (isUnpaidDayError(error)) {
+            setUnpaidScheduleId(slot.scheduleId);
+            return;
+          }
           toast.add({
             title: "Could not start booking",
             description: apiErrorMessage(error),
@@ -132,6 +141,11 @@ export default function BookPanel({ doctorId }: { doctorId?: string }) {
           })}
         </section>
       ))}
+      <UnpaidSlotNotice
+        open={unpaidScheduleId !== null}
+        scheduleId={unpaidScheduleId}
+        onClose={() => setUnpaidScheduleId(null)}
+      />
     </div>
   );
 }

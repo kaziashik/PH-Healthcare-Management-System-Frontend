@@ -44,6 +44,13 @@ export function bookAppointment(payload: {
   );
 }
 
+export function payAppointment(payload: { appointmentId: string }) {
+  return apiClient<ApiResponse<{ paymentUrl: string }>>(
+    "/appointment/pay-appointment",
+    { method: "POST", body: payload },
+  );
+}
+
 export function cancelAppointment(payload: { appointmentId: string }) {
   return apiClient<ApiResponse<unknown>>("/appointment/cancel-appointment", {
     method: "POST",

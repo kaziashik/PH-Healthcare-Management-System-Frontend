@@ -2,6 +2,10 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import UnpaidSlotNotice, {
+  isUnpaidDayError,
+} from "@/components/modules/patient-book/unpaid-slot-notice";
 import { toast } from "@/components/ui/toast";
 import { useGetMe } from "@/hooks/auth.hook";
 import { useBookAppointment } from "@/hooks/appointment.hook";
@@ -25,6 +29,7 @@ export default function DoctorOpenSlots({
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [unpaidScheduleId, setUnpaidScheduleId] = useState<string | null>(null);
   const me = useGetMe();
   const role = me.data?.data?.role;
   const slots = useGetDoctorOpenSlots(doctorId);
@@ -70,6 +75,10 @@ export default function DoctorOpenSlots({
           });
         },
         onError: (error) => {
+          if (isUnpaidDayError(error)) {
+            setUnpaidScheduleId(slot.scheduleId);
+            return;
+          }
           toast.add({
             title: "Could not start booking",
             description: apiErrorMessage(error),
@@ -127,6 +136,11 @@ export default function DoctorOpenSlots({
           </div>
         ))}
       </div>
+      <UnpaidSlotNotice
+        open={unpaidScheduleId !== null}
+        scheduleId={unpaidScheduleId}
+        onClose={() => setUnpaidScheduleId(null)}
+      />
     </section>
   );
 }

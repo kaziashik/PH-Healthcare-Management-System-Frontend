@@ -6,6 +6,7 @@ import {
   getDoctorAppointments,
   getMyAppointments,
   getMyPayments,
+  payAppointment,
   updateAppointmentStatus,
 } from "@/api/appointment.api";
 import type {
@@ -22,10 +23,14 @@ export function useGetDoctorAppointments(params: AppointmentListParams) {
   });
 }
 
-export function useGetMyAppointments(params: AppointmentListParams) {
+export function useGetMyAppointments(
+  params: AppointmentListParams,
+  enabled = true,
+) {
   return useQuery({
     queryKey: ["patient-appointments", params],
     queryFn: () => getMyAppointments(params),
+    enabled,
   });
 }
 
@@ -63,6 +68,10 @@ export function useUpdateAppointmentStatus() {
 
 export function useBookAppointment() {
   return useMutation({ mutationFn: bookAppointment });
+}
+
+export function usePayAppointment() {
+  return useMutation({ mutationFn: payAppointment });
 }
 
 export function useCancelAppointment() {
