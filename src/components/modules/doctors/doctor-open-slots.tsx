@@ -1,9 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { toast } from "@/components/ui/toast";
 import { useGetMe } from "@/hooks/auth.hook";
+import { useBookAppointment } from "@/hooks/appointment.hook";
 import { useGetDoctorOpenSlots } from "@/hooks/schedule.hook";
+import type { OpenSlot } from "@/types/schedule.type";
+import { apiErrorMessage } from "@/utils";
 
 function formatSlotTime(iso: string) {
   return new Date(iso).toLocaleTimeString([], {
@@ -19,11 +23,14 @@ export default function DoctorOpenSlots({
   doctorId: string;
   doctorName: string;
 }) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const me = useGetMe();
   const role = me.data?.data?.role;
   const slots = useGetDoctorOpenSlots(doctorId);
+  const book = useBookAppointment();
   const times = slots.data?.data ?? [];
-  const days = times.reduce<Record<string, typeof times>>((groups, slot) => {
+  const days = times.reduce<Record<string, OpenSlot[]>>((groups, slot) => {
     const day = new Date(slot.startDateTime).toLocaleDateString(undefined, {
       day: "numeric",
       month: "long",
@@ -32,12 +39,53 @@ export default function DoctorOpenSlots({
     return groups;
   }, {});
 
+  const payFor = (slot: OpenSlot) => {
+    if (me.isPending) return;
+    if (role !== "PATIENT") {
+      if (!role) {
+        router.push("/login");
+        return;
+      }
+      toast.add({
+        title: "Patient account needed",
+        description: "Booking opens from a patient account.",
+        type: "error",
+      });
+      return;
+    }
+
+    book.mutate(
+      { scheduleId: slot.scheduleId, serialNumber: slot.serialNumber },
+      {
+        onSuccess: (response) => {
+          queryClient.invalidateQueries({ queryKey: ["open-slots", doctorId] });
+          if (response.data?.paymentUrl) {
+            window.location.assign(response.data.paymentUrl);
+            return;
+          }
+          toast.add({
+            title: "Payment link missing",
+            description: "The booking did not return a bKash URL.",
+            type: "error",
+          });
+        },
+        onError: (error) => {
+          toast.add({
+            title: "Could not start booking",
+            description: apiErrorMessage(error),
+            type: "error",
+          });
+        },
+      },
+    );
+  };
+
   return (
     <section id="times" className="panel scroll-mt-24 p-4">
       <h2 className="text-xl font-semibold">Free times</h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        Open 20-minute visits with {doctorName}. Taken times and times held for
-        payment are hidden.
+        Choose a time with {doctorName}. That opens bKash for this 20-minute
+        visit.
       </p>
       {slots.isPending ? (
         <p className="mt-4 text-sm text-muted-foreground">Loading times...</p>
@@ -50,39 +98,31 @@ export default function DoctorOpenSlots({
           No free times are published for this doctor.
         </p>
       ) : null}
-      {times.length > 0 && role !== "DOCTOR" ? (
-        <Button
-          className="mt-4"
-          nativeButton={false}
-          render={
-            <Link
-              href={
-                role === "PATIENT"
-                  ? `/patient/book?doctorId=${doctorId}`
-                  : "/login"
-              }
-            >
-              Book and pay
-            </Link>
-          }
-        >
-          Book and pay
-        </Button>
-      ) : null}
       <div className="mt-4 flex flex-col gap-4">
         {Object.entries(days).map(([day, daySlots]) => (
           <div key={day}>
             <h3 className="text-sm font-medium">{day}</h3>
             <ul className="mt-2 flex flex-wrap gap-2">
-              {daySlots.map((slot) => (
-                <li
-                  key={`${slot.scheduleId}-${slot.serialNumber}`}
-                  className="rounded-full border border-border bg-background px-3 py-1.5 text-sm"
-                >
-                  {formatSlotTime(slot.startDateTime)} –{" "}
-                  {formatSlotTime(slot.endDateTime)}
-                </li>
-              ))}
+              {daySlots.map((slot) => {
+                const paying =
+                  book.isPending &&
+                  book.variables?.scheduleId === slot.scheduleId &&
+                  book.variables?.serialNumber === slot.serialNumber;
+                return (
+                  <li key={`${slot.scheduleId}-${slot.serialNumber}`}>
+                    <button
+                      type="button"
+                      disabled={book.isPending}
+                      onClick={() => payFor(slot)}
+                      className="rounded-full border border-border bg-background px-3 py-1.5 text-sm transition hover:border-[#14b8a6] hover:bg-[#0f766e] hover:text-white disabled:opacity-60"
+                    >
+                      {paying
+                        ? "Opening bKash"
+                        : `${formatSlotTime(slot.startDateTime)} – ${formatSlotTime(slot.endDateTime)}`}
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         ))}
