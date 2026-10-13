@@ -42,11 +42,17 @@ export default function AdminOverview() {
     limit: 1,
     verificationStatus: "PENDING",
   });
+  const approvedDoctors = useGetAllDoctors({
+    page: 1,
+    limit: 1,
+    verificationStatus: "APPROVED",
+  });
   const patients = useGetPatients({ page: 1, limit: 1 });
   const admins = useGetAdmins({ page: 1, limit: 1 });
 
   const counts = [
-    { label: "Pending doctors", value: pendingDoctors.data?.meta?.total ?? 0 },
+    { label: "Need approval", value: pendingDoctors.data?.meta?.total ?? 0 },
+    { label: "Approved doctors", value: approvedDoctors.data?.meta?.total ?? 0 },
     { label: "Patients", value: patients.data?.meta?.total ?? 0 },
     { label: "Admins", value: admins.data?.meta?.total ?? 0 },
   ];
@@ -54,13 +60,20 @@ export default function AdminOverview() {
   return (
     <div className="flex flex-col gap-5">
       <CountChart items={counts} />
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         <SummaryCard
-          title="Doctor approval"
-          href="/admin/approve-doctor"
+          title="Need approval"
+          href="/admin/need-approval"
           label="Waiting for review"
           total={pendingDoctors.data?.meta?.total}
           pending={pendingDoctors.isPending}
+        />
+        <SummaryCard
+          title="Approved doctors"
+          href="/admin/approved-doctors"
+          label="Active for patients"
+          total={approvedDoctors.data?.meta?.total}
+          pending={approvedDoctors.isPending}
         />
         <SummaryCard
           title="Patients"

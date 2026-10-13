@@ -14,10 +14,22 @@ import type { DoctorParams } from "@/types";
 
 interface Props extends DoctorParams {
   handleReview: Dispatch<SetStateAction<string>>;
+  reviewLabel: string;
+}
+
+function doctorStatus(doctor: {
+  verificationStatus: string;
+  user?: { status?: string } | null;
+}) {
+  if (doctor.user?.status === "BLOCKED") return "Blocked";
+  if (doctor.verificationStatus === "APPROVED") return "Active";
+  if (doctor.verificationStatus === "PENDING") return "Need approval";
+  return "Rejected";
 }
 
 export default function DoctorApprovalTable({
   handleReview,
+  reviewLabel,
   ...params
 }: Props) {
   //1 first step
@@ -35,7 +47,7 @@ export default function DoctorApprovalTable({
           <TableRow>
             <TableHead className="w-[100px]">Name</TableHead>
             <TableHead>License No.: </TableHead>
-            <TableHead>Emaial.: </TableHead>
+            <TableHead>Email</TableHead>
             <TableHead>Contact No: </TableHead>
             <TableHead>Specialization: </TableHead>
             <TableHead>Status</TableHead>
@@ -57,16 +69,16 @@ export default function DoctorApprovalTable({
                 {doctor.contactNumber ? doctor.contactNumber : " "}
               </TableCell>
               <TableCell>{doctor.specialization}</TableCell>
-              <TableCell>{doctor.user?.status}</TableCell>
+              <TableCell>{doctorStatus(doctor)}</TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
                   <Button
-                    variant={"outline"}
+                    variant="outline"
                     onClick={() => handleReview(doctor.id)}
                   >
-                    Review
+                    {reviewLabel}
                   </Button>
-                  {doctor.user ? (
+                  {params.verificationStatus === "APPROVED" && doctor.user ? (
                     <AccountStatusButton
                       userId={doctor.userId}
                       status={doctor.user.status}

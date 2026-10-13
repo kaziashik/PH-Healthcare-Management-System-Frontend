@@ -1,13 +1,5 @@
-import DoctorApprovalTabs from "@/components/modules/doctor-approval/doctor-approval-tabs";
+import { redirect } from "next/navigation";
 
-export default function page() {
-  return (
-    <section>
-      <div>
-        <h1> Doctor approval </h1>
-        <p>Please review and make sure the given data is real.</p>
-      </div>
-      <DoctorApprovalTabs />
-    </section>
-  );
+export default function Page() {
+  redirect("/admin/need-approval");
 }

@@ -3,6 +3,7 @@
 import {
   BadgeCheck,
   CalendarCheck,
+  ClipboardList,
   CalendarClock,
   CalendarPlus,
   ChartColumn,
@@ -40,7 +41,8 @@ const sidebarRoutes: Partial<Record<UserRole, SidebarItems>> = {
 
 const itemIcons: Record<string, LucideIcon> = {
   Overview: LayoutDashboard,
-  "Doctor Approval": BadgeCheck,
+  "Approved doctors": BadgeCheck,
+  "Need approval": ClipboardList,
   Patients: Users,
   Admins: ShieldCheck,
   Analytics: ChartColumn,

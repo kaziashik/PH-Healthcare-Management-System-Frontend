@@ -9,8 +9,12 @@ export const adminRoutes = [
         url: `${prefix}`,
       },
       {
-        title: "Doctor Approval",
-        url: `${prefix}/approve-doctor`,
+        title: "Approved doctors",
+        url: `${prefix}/approved-doctors`,
+      },
+      {
+        title: "Need approval",
+        url: `${prefix}/need-approval`,
       },
       {
         title: "Patients",

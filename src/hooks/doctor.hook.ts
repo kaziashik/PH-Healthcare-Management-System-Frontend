@@ -81,8 +81,12 @@ export function useGetDoctor(doctorId: string) {
   });
 }
 
-export function useApproveDoctor(params: DoctorParams) {
+export function useApproveDoctor() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: approveDoctor,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["doctors"] });
+    },
   });
 }
