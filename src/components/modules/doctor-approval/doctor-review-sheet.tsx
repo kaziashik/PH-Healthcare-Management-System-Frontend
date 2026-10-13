@@ -60,11 +60,59 @@ function Detail({
   );
 }
 
+function DocumentGroup({
+  title,
+  icon: Icon,
+  documents,
+  empty,
+  onOpen,
+}: {
+  title: string;
+  icon: LucideIcon;
+  documents: ReviewDocument[];
+  empty: string;
+  onOpen: (document: ReviewDocument) => void;
+}) {
+  return (
+    <div className="mt-4">
+      <p className="mb-2 flex items-center gap-1.5 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+        <Icon className="size-3.5" aria-hidden="true" />
+        {title}
+        <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] text-primary">
+          {documents.length}
+        </span>
+      </p>
+      {documents.length === 0 ? (
+        <p className="text-sm text-muted-foreground">{empty}</p>
+      ) : (
+        <div className="grid gap-2">
+          {documents.map((document, index) => (
+            <Button
+              key={`${document.url}-${index}`}
+              type="button"
+              variant="outline"
+              className="w-full justify-start"
+              onClick={() => onOpen(document)}
+            >
+              <FileText aria-hidden="true" />
+              <span className="truncate">{document.label}</span>
+              <span className="ml-auto text-xs text-muted-foreground">
+                {fileKind(document.url)}
+              </span>
+            </Button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 type ReviewDocument = {
   url: string;
   title: string;
   fileName: string;
   label: string;
+  group: "resume" | "additional";
 };
 
 function fileKind(url: string) {
@@ -82,6 +130,7 @@ function reviewDocuments(doctor: Doctor): ReviewDocument[] {
       title: `${doctor.name} CV`,
       fileName: `${safeName}_CV.pdf`,
       label: "Resume",
+      group: "resume",
     });
   }
 
@@ -94,9 +143,10 @@ function reviewDocuments(doctor: Doctor): ReviewDocument[] {
     const kind = fileKind(file.url).toLowerCase();
     documents.push({
       url: file.url,
-      title: `${doctor.name} document ${index + 1}`,
-      fileName: `${safeName}_document_${index + 1}.${kind}`,
-      label: `Document ${index + 1}`,
+      title: `${doctor.name} additional document ${index + 1}`,
+      fileName: `${safeName}_additional_document_${index + 1}.${kind}`,
+      label: `Additional document ${index + 1}`,
+      group: "additional",
     });
   });
 
@@ -204,38 +254,22 @@ export default function DoctorReviewSheet({
               <Detail key={row.label} {...row} />
             ))}
           </dl>
-          <div className="mt-4">
-            <p className="mb-2 flex items-center gap-1.5 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
-              <Files className="size-3.5" aria-hidden="true" />
-              Documents
-              <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] text-primary">
-                {documents.length}
-              </span>
-            </p>
-            {documents.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No documents uploaded.
-              </p>
-            ) : (
-              <div className="grid gap-2">
-                {documents.map((document, index) => (
-                  <Button
-                    key={`${document.url}-${index}`}
-                    type="button"
-                    variant="outline"
-                    className="w-full justify-start"
-                    onClick={() => setPreview(document)}
-                  >
-                    <FileText aria-hidden="true" />
-                    <span className="truncate">{document.label}</span>
-                    <span className="ml-auto text-xs text-muted-foreground">
-                      {fileKind(document.url)}
-                    </span>
-                  </Button>
-                ))}
-              </div>
+          <DocumentGroup
+            title="Resume"
+            icon={FileText}
+            documents={documents.filter((document) => document.group === "resume")}
+            empty="No resume uploaded."
+            onOpen={setPreview}
+          />
+          <DocumentGroup
+            title="Additional documents"
+            icon={Files}
+            documents={documents.filter(
+              (document) => document.group === "additional",
             )}
-          </div>
+            empty="No additional documents uploaded."
+            onOpen={setPreview}
+          />
         </div>
         {canDecide ? (
           <SheetFooter className="border-t bg-background">
