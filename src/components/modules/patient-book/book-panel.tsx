@@ -1,121 +1,60 @@
 "use client";
 
-import { useState } from "react";
-import ListPager from "@/components/modules/list-pager";
+import { useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
 import { useBookAppointment } from "@/hooks/appointment.hook";
-import {
-  useGetFutureSchedules,
-  useGetTodaysSchedules,
-} from "@/hooks/schedule.hook";
-import { formatVisitRange } from "@/lib/visit-time";
-import type { Schedule } from "@/types/schedule.type";
+import { useGetDoctor } from "@/hooks/doctor.hook";
+import { useGetDoctorOpenSlots } from "@/hooks/schedule.hook";
+import type { OpenSlot } from "@/types/schedule.type";
 import { apiErrorMessage } from "@/utils";
 
-function ScheduleList({
-  title,
-  emptyLabel,
-  schedules,
-  isPending,
-  isError,
-  page,
-  totalPages,
-  total,
-  bookingId,
-  onPageChange,
-  onBook,
-}: {
-  title: string;
-  emptyLabel: string;
-  schedules: Schedule[];
-  isPending: boolean;
-  isError: boolean;
-  page: number;
-  totalPages: number;
-  total?: number;
-  bookingId?: string;
-  onPageChange: (page: number) => void;
-  onBook: (scheduleId: string) => void;
-}) {
-  return (
-    <section className="flex flex-col gap-3">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      {isPending ? (
-        <p className="text-sm text-muted-foreground">Loading schedules...</p>
-      ) : null}
-      {isError ? (
-        <p className="text-sm text-destructive">Could not load schedules.</p>
-      ) : null}
-      {!isPending && !isError && schedules.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{emptyLabel}</p>
-      ) : null}
-      <div className="grid gap-3">
-        {schedules.map((schedule) => {
-          const booking = bookingId === schedule.id;
-          const fee = schedule.doctor?.consultationFee;
-
-          return (
-            <article key={schedule.id} className="panel p-4">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h3 className="font-semibold">{schedule.doctor?.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {schedule.doctor?.specialization}
-                    {fee != null ? ` · ৳${fee}` : ""}
-                  </p>
-                  <p className="mt-2 text-sm">
-                    {formatVisitRange(
-                      schedule.startDateTime,
-                      schedule.endDateTime,
-                    )}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {schedule.availableSlots} open slots
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  disabled={booking}
-                  onClick={() => onBook(schedule.id)}
-                >
-                  {booking ? (
-                    <>
-                      <Spinner /> Opening bKash
-                    </>
-                  ) : (
-                    "Book"
-                  )}
-                </Button>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-      <ListPager
-        page={page}
-        totalPages={totalPages}
-        total={total}
-        limit={10}
-        onPageChange={onPageChange}
-      />
-    </section>
-  );
+function formatSlotTime(iso: string) {
+  return new Date(iso).toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
-export default function BookPanel() {
-  const [todayPage, setTodayPage] = useState(1);
-  const [futurePage, setFuturePage] = useState(1);
-  const today = useGetTodaysSchedules({ page: todayPage, limit: 10 });
-  const future = useGetFutureSchedules({ page: futurePage, limit: 10 });
+export default function BookPanel({ doctorId }: { doctorId?: string }) {
+  const queryClient = useQueryClient();
+  const doctor = useGetDoctor(doctorId ?? "");
+  const slots = useGetDoctorOpenSlots(doctorId ?? "");
   const book = useBookAppointment();
 
-  const bookSchedule = (scheduleId: string) => {
+  if (!doctorId) {
+    return (
+      <div className="flex flex-col gap-3">
+        <h1 className="text-2xl font-bold tracking-tight">Choose a doctor</h1>
+        <p className="text-sm text-muted-foreground">
+          Search the roster, open a doctor, then pick a free time.
+        </p>
+        <Button nativeButton={false} render={<Link href="/doctors">Find a doctor</Link>}>
+          Find a doctor
+        </Button>
+      </div>
+    );
+  }
+
+  const name = doctor.data?.data?.name;
+  const times = slots.data?.data ?? [];
+  const days = times.reduce<Record<string, OpenSlot[]>>((groups, slot) => {
+    const day = new Date(slot.startDateTime).toLocaleDateString(undefined, {
+      day: "numeric",
+      month: "long",
+    });
+    groups[day] = [...(groups[day] ?? []), slot];
+    return groups;
+  }, {});
+
+  const bookTime = (slot: OpenSlot) => {
     book.mutate(
-      { scheduleId },
+      { scheduleId: slot.scheduleId, serialNumber: slot.serialNumber },
       {
         onSuccess: (response) => {
+          queryClient.invalidateQueries({ queryKey: ["open-slots", doctorId] });
           if (response.data?.paymentUrl) {
             window.location.assign(response.data.paymentUrl);
             return;
@@ -138,33 +77,61 @@ export default function BookPanel() {
   };
 
   return (
-    <div className="flex flex-col gap-8">
-      <ScheduleList
-        title="Open later today"
-        emptyLabel="No doctors have an open schedule later today."
-        schedules={today.data?.data ?? []}
-        isPending={today.isPending}
-        isError={today.isError}
-        page={todayPage}
-        totalPages={today.data?.meta?.totalPages ?? 1}
-        total={today.data?.meta?.total}
-        bookingId={book.isPending ? book.variables?.scheduleId : undefined}
-        onPageChange={setTodayPage}
-        onBook={bookSchedule}
-      />
-      <ScheduleList
-        title="Later days"
-        emptyLabel="No doctors have a published schedule on a later day."
-        schedules={future.data?.data ?? []}
-        isPending={future.isPending}
-        isError={future.isError}
-        page={futurePage}
-        totalPages={future.data?.meta?.totalPages ?? 1}
-        total={future.data?.meta?.total}
-        bookingId={book.isPending ? book.variables?.scheduleId : undefined}
-        onPageChange={setFuturePage}
-        onBook={bookSchedule}
-      />
+    <div className="flex flex-col gap-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Choose a time with {name ?? "this doctor"}.
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Each time is 20 minutes. Book and pay keeps that time for you.
+        </p>
+      </div>
+      {doctor.isPending || slots.isPending ? (
+        <p className="text-sm text-muted-foreground">Loading times...</p>
+      ) : null}
+      {slots.isError || doctor.isError ? (
+        <p className="text-sm text-destructive">Could not load times.</p>
+      ) : null}
+      {!slots.isPending && !slots.isError && times.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          No free times are published for this doctor.
+        </p>
+      ) : null}
+      {Object.entries(days).map(([day, daySlots]) => (
+        <section key={day} className="flex flex-col gap-3">
+          <h2 className="text-lg font-semibold">{day}</h2>
+          {daySlots.map((slot) => {
+            const booking =
+              book.isPending &&
+              book.variables?.scheduleId === slot.scheduleId &&
+              book.variables?.serialNumber === slot.serialNumber;
+            return (
+              <article
+                key={`${slot.scheduleId}-${slot.serialNumber}`}
+                className="panel flex flex-wrap items-center justify-between gap-3 p-4"
+              >
+                <p className="font-medium">
+                  {formatSlotTime(slot.startDateTime)} –{" "}
+                  {formatSlotTime(slot.endDateTime)}
+                </p>
+                <Button
+                  type="button"
+                  disabled={book.isPending}
+                  onClick={() => bookTime(slot)}
+                >
+                  {booking ? (
+                    <>
+                      <Spinner /> Opening bKash
+                    </>
+                  ) : (
+                    "Book and pay"
+                  )}
+                </Button>
+              </article>
+            );
+          })}
+        </section>
+      ))}
     </div>
   );
 }

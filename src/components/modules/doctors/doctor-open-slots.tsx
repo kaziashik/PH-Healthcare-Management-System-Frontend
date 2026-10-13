@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { useGetMe } from "@/hooks/auth.hook";
 import { useGetDoctorOpenSlots } from "@/hooks/schedule.hook";
 
 function formatSlotTime(iso: string) {
@@ -16,6 +19,8 @@ export default function DoctorOpenSlots({
   doctorId: string;
   doctorName: string;
 }) {
+  const me = useGetMe();
+  const role = me.data?.data?.role;
   const slots = useGetDoctorOpenSlots(doctorId);
   const times = slots.data?.data ?? [];
   const days = times.reduce<Record<string, typeof times>>((groups, slot) => {
@@ -44,6 +49,25 @@ export default function DoctorOpenSlots({
         <p className="mt-4 text-sm text-muted-foreground">
           No free times are published for this doctor.
         </p>
+      ) : null}
+      {times.length > 0 && role !== "DOCTOR" ? (
+        <Button
+          className="mt-4"
+          nativeButton={false}
+          render={
+            <Link
+              href={
+                role === "PATIENT"
+                  ? `/patient/book?doctorId=${doctorId}`
+                  : "/login"
+              }
+            >
+              Book and pay
+            </Link>
+          }
+        >
+          Book and pay
+        </Button>
       ) : null}
       <div className="mt-4 flex flex-col gap-4">
         {Object.entries(days).map(([day, daySlots]) => (

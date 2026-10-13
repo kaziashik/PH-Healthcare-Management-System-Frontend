@@ -34,7 +34,10 @@ export function updateAppointmentStatus(
   );
 }
 
-export function bookAppointment(payload: { scheduleId: string }) {
+export function bookAppointment(payload: {
+  scheduleId: string;
+  serialNumber: number;
+}) {
   return apiClient<ApiResponse<{ paymentUrl: string }>>(
     "/appointment/book-appointment",
     { method: "POST", body: payload },
