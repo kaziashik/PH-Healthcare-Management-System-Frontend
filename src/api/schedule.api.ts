@@ -19,6 +19,12 @@ export function getTodaysSchedules(params: ScheduleListParams) {
   });
 }
 
+export function getFutureSchedules(params: ScheduleListParams) {
+  return apiClient<ApiResponse<Schedule[]>>("/schedule/future-schedules", {
+    params,
+  });
+}
+
 export function createSchedule(payload: CreateSchedulePayload) {
   return apiClient<ApiResponse<Schedule>>("/schedule/create-schedule", {
     method: "POST",

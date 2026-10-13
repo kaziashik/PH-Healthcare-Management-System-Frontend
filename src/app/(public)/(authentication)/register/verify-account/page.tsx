@@ -4,7 +4,7 @@ import VerifyAccountForm from "@/components/form/verify-account-form";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export default function VerifyDoctorAccountPage() {
+export default function VerifyPatientAccountPage() {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
@@ -19,7 +19,7 @@ export default function VerifyDoctorAccountPage() {
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
             <Suspense fallback={<p>Loading...</p>}>
-              <VerifyAccountForm mode="doctor" />
+              <VerifyAccountForm mode="patient" />
             </Suspense>
           </div>
         </div>

@@ -59,13 +59,26 @@ export default function DoctorCard({ doctor }: { doctor: Doctor }) {
           {doctor.experienceYears}{" "}
           {doctor.experienceYears === 1 ? "year" : "years"}
         </p>
-        <Button
-          className="mt-auto transition duration-300 motion-safe:group-hover:bg-[#0f766e]"
-          nativeButton={false}
-          render={<Link href={`/doctors/${doctor.id}`}>View details</Link>}
-        >
-          View details
-        </Button>
+        <div className="mt-auto flex flex-col gap-2 sm:flex-row">
+          <Button
+            className="bg-[#0f766e] text-white hover:bg-[#115e59]"
+            nativeButton={false}
+            render={
+              <Link href={`/doctors/${doctor.id}#appointment`}>
+                Appointment
+              </Link>
+            }
+          >
+            Appointment
+          </Button>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href={`/doctors/${doctor.id}`}>View details</Link>}
+          >
+            View details
+          </Button>
+        </div>
       </div>
     </article>
   );

@@ -245,14 +245,14 @@ export default function HomePage() {
               </Button>
             ) : null}
           </div>
-          {!role ? (
+          {role === "DOCTOR" ? null : (
             <Link
               href="/apply"
               className="mt-4 inline-flex text-sm font-medium text-[#5eead4] underline-offset-4 hover:underline"
             >
               Apply as a doctor
             </Link>
-          ) : null}
+          )}
           <div className="mt-8 flex flex-wrap items-center gap-2">
             {slides.map((item, index) => (
               <button

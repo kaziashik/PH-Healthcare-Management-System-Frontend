@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createSchedule,
   deleteSchedule,
+  getFutureSchedules,
   getMySchedules,
   getTodaysSchedules,
   publishSchedule,
@@ -26,11 +27,19 @@ export function useGetTodaysSchedules(params: ScheduleListParams) {
   });
 }
 
+export function useGetFutureSchedules(params: ScheduleListParams) {
+  return useQuery({
+    queryKey: ["future-schedules", params],
+    queryFn: () => getFutureSchedules(params),
+  });
+}
+
 function useRefreshSchedules() {
   const queryClient = useQueryClient();
   return () => {
     queryClient.invalidateQueries({ queryKey: ["schedules"] });
     queryClient.invalidateQueries({ queryKey: ["todays-schedules"] });
+    queryClient.invalidateQueries({ queryKey: ["future-schedules"] });
   };
 }
 

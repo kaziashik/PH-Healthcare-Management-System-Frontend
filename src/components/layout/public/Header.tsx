@@ -75,14 +75,17 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const links = role
-    ? [
-        ...publicLinks.slice(0, 2),
-        { name: "Dashboard", url: dashboardRoute[role] },
-        { name: "Journal", url: "/journal" },
-        { name: "Help", url: "/help" },
-      ]
-    : publicLinks;
+  const links = [
+    ...(role
+      ? [
+          ...publicLinks.slice(0, 2),
+          { name: "Dashboard", url: dashboardRoute[role] },
+          { name: "Journal", url: "/journal" },
+          { name: "Help", url: "/help" },
+        ]
+      : publicLinks),
+    ...(role === "DOCTOR" ? [] : [{ name: "Apply", url: "/apply" }]),
+  ];
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#06282f] text-white">

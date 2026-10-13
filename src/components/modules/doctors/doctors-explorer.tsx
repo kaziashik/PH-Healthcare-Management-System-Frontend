@@ -204,7 +204,10 @@ export default function DoctorsExplorer() {
         </p>
       ) : null}
       {!isPending && !isError && doctors.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div
+          id="appointments"
+          className="grid scroll-mt-24 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        >
           {doctors.map((doctor) => (
             <DoctorCard key={doctor.id} doctor={doctor} />
           ))}

@@ -6,49 +6,61 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
 import { useBookAppointment } from "@/hooks/appointment.hook";
-import { useGetTodaysSchedules } from "@/hooks/schedule.hook";
+import {
+  useGetFutureSchedules,
+  useGetTodaysSchedules,
+} from "@/hooks/schedule.hook";
 import { formatVisitRange } from "@/lib/visit-time";
+import type { Schedule } from "@/types/schedule.type";
 import { apiErrorMessage } from "@/utils";
 
-export default function BookPanel() {
-  const [page, setPage] = useState(1);
-  const { data, isPending, isError } = useGetTodaysSchedules({
-    page,
-    limit: 10,
-  });
-  const book = useBookAppointment();
-  const schedules = data?.data ?? [];
-
+function ScheduleList({
+  title,
+  emptyLabel,
+  schedules,
+  isPending,
+  isError,
+  page,
+  totalPages,
+  total,
+  bookingId,
+  onPageChange,
+  onBook,
+}: {
+  title: string;
+  emptyLabel: string;
+  schedules: Schedule[];
+  isPending: boolean;
+  isError: boolean;
+  page: number;
+  totalPages: number;
+  total?: number;
+  bookingId?: string;
+  onPageChange: (page: number) => void;
+  onBook: (scheduleId: string) => void;
+}) {
   return (
-    <div className="flex flex-col gap-4">
+    <section className="flex flex-col gap-3">
+      <h2 className="text-lg font-semibold">{title}</h2>
       {isPending ? (
-        <p className="text-sm text-muted-foreground">
-          Loading today's schedules...
-        </p>
+        <p className="text-sm text-muted-foreground">Loading schedules...</p>
       ) : null}
       {isError ? (
-        <p className="text-sm text-destructive">
-          Could not load today's schedules.
-        </p>
+        <p className="text-sm text-destructive">Could not load schedules.</p>
       ) : null}
-
       {!isPending && !isError && schedules.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          No doctors have an open schedule later today.
-        </p>
+        <p className="text-sm text-muted-foreground">{emptyLabel}</p>
       ) : null}
-
       <div className="grid gap-3">
         {schedules.map((schedule) => {
-          const booking =
-            book.isPending && book.variables?.scheduleId === schedule.id;
+          const booking = bookingId === schedule.id;
           const fee = schedule.doctor?.consultationFee;
 
           return (
             <article key={schedule.id} className="panel p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <h2 className="font-semibold">{schedule.doctor?.name}</h2>
+                  <h3 className="font-semibold">{schedule.doctor?.name}</h3>
                   <p className="text-sm text-muted-foreground">
                     {schedule.doctor?.specialization}
                     {fee != null ? ` · ৳${fee}` : ""}
@@ -66,32 +78,7 @@ export default function BookPanel() {
                 <Button
                   type="button"
                   disabled={booking}
-                  onClick={() =>
-                    book.mutate(
-                      { scheduleId: schedule.id },
-                      {
-                        onSuccess: (response) => {
-                          if (response.data?.paymentUrl) {
-                            window.location.assign(response.data.paymentUrl);
-                            return;
-                          }
-                          toast.add({
-                            title: "Payment link missing",
-                            description:
-                              "The booking did not return a bKash URL.",
-                            type: "error",
-                          });
-                        },
-                        onError: (error) => {
-                          toast.add({
-                            title: "Could not start booking",
-                            description: apiErrorMessage(error),
-                            type: "error",
-                          });
-                        },
-                      },
-                    )
-                  }
+                  onClick={() => onBook(schedule.id)}
                 >
                   {booking ? (
                     <>
@@ -106,11 +93,77 @@ export default function BookPanel() {
           );
         })}
       </div>
-
       <ListPager
         page={page}
-        totalPages={data?.meta?.totalPages ?? 1}
-        onPageChange={setPage}
+        totalPages={totalPages}
+        total={total}
+        limit={10}
+        onPageChange={onPageChange}
+      />
+    </section>
+  );
+}
+
+export default function BookPanel() {
+  const [todayPage, setTodayPage] = useState(1);
+  const [futurePage, setFuturePage] = useState(1);
+  const today = useGetTodaysSchedules({ page: todayPage, limit: 10 });
+  const future = useGetFutureSchedules({ page: futurePage, limit: 10 });
+  const book = useBookAppointment();
+
+  const bookSchedule = (scheduleId: string) => {
+    book.mutate(
+      { scheduleId },
+      {
+        onSuccess: (response) => {
+          if (response.data?.paymentUrl) {
+            window.location.assign(response.data.paymentUrl);
+            return;
+          }
+          toast.add({
+            title: "Payment link missing",
+            description: "The booking did not return a bKash URL.",
+            type: "error",
+          });
+        },
+        onError: (error) => {
+          toast.add({
+            title: "Could not start booking",
+            description: apiErrorMessage(error),
+            type: "error",
+          });
+        },
+      },
+    );
+  };
+
+  return (
+    <div className="flex flex-col gap-8">
+      <ScheduleList
+        title="Open later today"
+        emptyLabel="No doctors have an open schedule later today."
+        schedules={today.data?.data ?? []}
+        isPending={today.isPending}
+        isError={today.isError}
+        page={todayPage}
+        totalPages={today.data?.meta?.totalPages ?? 1}
+        total={today.data?.meta?.total}
+        bookingId={book.isPending ? book.variables?.scheduleId : undefined}
+        onPageChange={setTodayPage}
+        onBook={bookSchedule}
+      />
+      <ScheduleList
+        title="Later days"
+        emptyLabel="No doctors have a published schedule on a later day."
+        schedules={future.data?.data ?? []}
+        isPending={future.isPending}
+        isError={future.isError}
+        page={futurePage}
+        totalPages={future.data?.meta?.totalPages ?? 1}
+        total={future.data?.meta?.total}
+        bookingId={book.isPending ? book.variables?.scheduleId : undefined}
+        onPageChange={setFuturePage}
+        onBook={bookSchedule}
       />
     </div>
   );

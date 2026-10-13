@@ -43,6 +43,7 @@ function useRefreshVisits() {
     queryClient.invalidateQueries({ queryKey: ["patient-appointments"] });
     queryClient.invalidateQueries({ queryKey: ["my-payments"] });
     queryClient.invalidateQueries({ queryKey: ["todays-schedules"] });
+    queryClient.invalidateQueries({ queryKey: ["future-schedules"] });
   };
 }
 

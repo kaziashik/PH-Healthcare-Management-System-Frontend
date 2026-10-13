@@ -65,24 +65,37 @@ export default function DoctorDetails({ doctorId }: { doctorId: string }) {
         <div className="flex flex-col gap-3">
           <h1 className="text-3xl font-bold tracking-tight">{doctor.name}</h1>
           <p className="text-muted-foreground">{doctor.specialization}</p>
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div
+            id="appointment"
+            className="flex scroll-mt-24 flex-col gap-2 sm:flex-row sm:flex-wrap"
+          >
             {role === "PATIENT" ? (
               <Button
                 nativeButton={false}
-                render={<Link href="/patient/book">Book an open visit</Link>}
+                render={<Link href="/patient/book">Appointment</Link>}
               >
-                Book an open visit
+                Appointment
+              </Button>
+            ) : role === "DOCTOR" ? (
+              <Button
+                nativeButton={false}
+                render={<Link href="/doctor/appointments">Appointment</Link>}
+              >
+                Appointment
               </Button>
             ) : role ? (
-              <p className="text-sm text-muted-foreground">
-                Booking is available from a patient account.
-              </p>
+              <Button
+                nativeButton={false}
+                render={<Link href="/doctors#appointments">Appointment</Link>}
+              >
+                Appointment
+              </Button>
             ) : (
               <Button
                 nativeButton={false}
-                render={<Link href="/login">Sign in to book</Link>}
+                render={<Link href="/login">Appointment</Link>}
               >
-                Sign in to book
+                Appointment
               </Button>
             )}
             <Button
@@ -92,6 +105,11 @@ export default function DoctorDetails({ doctorId }: { doctorId: string }) {
             >
               All doctors
             </Button>
+            {role && role !== "PATIENT" && role !== "DOCTOR" ? (
+              <p className="text-sm text-muted-foreground sm:basis-full">
+                Patients book this visit from a patient account.
+              </p>
+            ) : null}
           </div>
         </div>
       </section>
