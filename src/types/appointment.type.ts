@@ -42,6 +42,7 @@ export interface Appointment {
     id: string;
     name: string;
     specialization: string;
+    user?: { imageUrl?: string | null } | null;
   };
   schedule: Pick<
     Schedule,
