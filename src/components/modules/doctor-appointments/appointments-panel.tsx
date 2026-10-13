@@ -25,7 +25,7 @@ import {
   useGetDoctorAppointments,
   useUpdateAppointmentStatus,
 } from "@/hooks/appointment.hook";
-import { formatVisitRange } from "@/lib/visit-time";
+import { formatChosenVisit } from "@/lib/visit-time";
 import type { Appointment, AppointmentStatus } from "@/types/appointment.type";
 import { apiErrorMessage } from "@/utils";
 
@@ -111,7 +111,7 @@ export default function DoctorAppointmentsPanel() {
             <TableHeader>
               <TableRow>
                 <TableHead>Patient</TableHead>
-                <TableHead>When</TableHead>
+                <TableHead>Date and time</TableHead>
                 <TableHead>Serial</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Action</TableHead>
@@ -135,15 +135,24 @@ export default function DoctorAppointmentsPanel() {
                     <TableRow key={appointment.id}>
                       <TableCell>{appointment.patient?.name}</TableCell>
                       <TableCell>
-                        {formatVisitRange(
-                          appointment.schedule.startDateTime,
-                          appointment.schedule.endDateTime,
-                        )}
+                        {formatChosenVisit(appointment.joiningTime) ?? "—"}
                       </TableCell>
                       <TableCell>{appointment.serialNumber ?? "—"}</TableCell>
                       <TableCell>{appointment.status}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          {appointment.schedule.meetingLink &&
+                          appointment.status !== "CANCELLED" &&
+                          appointment.status !== "PENDING" ? (
+                            <a
+                              className="text-sm font-medium underline underline-offset-4"
+                              href={appointment.schedule.meetingLink}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Join visit
+                            </a>
+                          ) : null}
                           {canStart ? (
                             <Button
                               type="button"

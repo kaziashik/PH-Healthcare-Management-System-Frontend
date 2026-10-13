@@ -11,7 +11,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
-import { useCreateSchedule, useUpdateSchedule } from "@/hooks/schedule.hook";
+import {
+  useCreateSchedule,
+  usePublishSchedule,
+  useUpdateSchedule,
+} from "@/hooks/schedule.hook";
 import {
   combineLocalDateTime,
   localDateInput,
@@ -46,10 +50,14 @@ export default function ScheduleForm({
   onDone?: () => void;
 }) {
   const createSchedule = useCreateSchedule();
+  const publishSchedule = usePublishSchedule();
   const updateSchedule = useUpdateSchedule();
   const dateLocked = schedule?.status === "PUBLISHED";
   const timeLocked = schedule ? scheduleTimeIsLocked(schedule) : false;
-  const pending = createSchedule.isPending || updateSchedule.isPending;
+  const pending =
+    createSchedule.isPending ||
+    publishSchedule.isPending ||
+    updateSchedule.isPending;
 
   const form = useForm({
     defaultValues: {
@@ -124,7 +132,28 @@ export default function ScheduleForm({
           endDateTime: payload.endDateTime ?? "",
           meetingLink: payload.meetingLink,
         },
-        { onSuccess, onError },
+        {
+          onSuccess: (response) => {
+            const scheduleId = response.data?.id;
+            if (!scheduleId) {
+              onError(new Error("The day was saved but could not be published."));
+              return;
+            }
+            publishSchedule.mutate(scheduleId, {
+              onSuccess: () => {
+                toast.add({
+                  title: "Day published",
+                  description: "Patients can book the open times on this day.",
+                  type: "success",
+                });
+                form.reset();
+                onDone?.();
+              },
+              onError,
+            });
+          },
+          onError,
+        },
       );
     },
   });
@@ -209,7 +238,7 @@ export default function ScheduleForm({
                     </p>
                   ) : (
                     <p className="text-xs text-muted-foreground">
-                      Use one date, between 3 and 8 hours.
+                      Use 3 to 8 hours on this date.
                     </p>
                   )}
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -225,10 +254,11 @@ export default function ScheduleForm({
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Meeting link</FieldLabel>
+                <FieldLabel htmlFor={field.name}>Google Meet link</FieldLabel>
                 <Input
                   id={field.name}
                   type="url"
+                  placeholder="https://meet.google.com/..."
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
@@ -243,12 +273,12 @@ export default function ScheduleForm({
         <Button disabled={pending} type="submit">
           {pending ? (
             <>
-              <Spinner /> Saving
+              <Spinner /> {schedule ? "Saving" : "Publishing"}
             </>
           ) : schedule ? (
             "Save changes"
           ) : (
-            "Create schedule"
+            "Publish"
           )}
         </Button>
       </FieldGroup>

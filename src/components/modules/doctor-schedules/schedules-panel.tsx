@@ -43,7 +43,6 @@ export default function SchedulesPanel() {
   return (
     <div className="flex flex-col gap-8">
       <div className="max-w-xl">
-        <h2 className="mb-3 text-lg font-semibold">New schedule</h2>
         <ScheduleForm />
       </div>
 

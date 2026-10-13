@@ -26,6 +26,22 @@ export function scheduleDurationMinutes(
   return (end.getTime() - start.getTime()) / 60000;
 }
 
+export function formatChosenVisit(joiningIso: string | null) {
+  if (!joiningIso) return null;
+  const start = new Date(joiningIso);
+  const end = new Date(start.getTime() + 20 * 60 * 1000);
+  const date = start.toLocaleDateString(undefined, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const timeOptions: Intl.DateTimeFormatOptions = {
+    hour: "numeric",
+    minute: "2-digit",
+  };
+  return `${date}, ${start.toLocaleTimeString([], timeOptions)} – ${end.toLocaleTimeString([], timeOptions)}`;
+}
+
 export function formatVisitRange(startIso: string, endIso: string) {
   const start = new Date(startIso);
   const end = new Date(endIso);

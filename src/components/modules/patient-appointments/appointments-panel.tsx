@@ -17,7 +17,7 @@ import {
   useCancelAppointment,
   useGetMyAppointments,
 } from "@/hooks/appointment.hook";
-import { formatVisitRange } from "@/lib/visit-time";
+import { formatChosenVisit } from "@/lib/visit-time";
 import type { AppointmentStatus } from "@/types/appointment.type";
 import { apiErrorMessage } from "@/utils";
 
@@ -74,7 +74,7 @@ export default function PatientAppointmentsPanel() {
             <TableHeader>
               <TableRow>
                 <TableHead>Doctor</TableHead>
-                <TableHead>When</TableHead>
+                <TableHead>Date and time</TableHead>
                 <TableHead>Serial</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Action</TableHead>
@@ -100,13 +100,14 @@ export default function PatientAppointmentsPanel() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        {formatVisitRange(
-                          appointment.schedule.startDateTime,
-                          appointment.schedule.endDateTime,
-                        )}
+                        {formatChosenVisit(appointment.joiningTime) ?? "—"}
                       </TableCell>
                       <TableCell>{appointment.serialNumber ?? "—"}</TableCell>
-                      <TableCell>{appointment.status}</TableCell>
+                      <TableCell>
+                        {appointment.status === "PENDING"
+                          ? "Waiting for payment"
+                          : appointment.status}
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex flex-col items-end gap-2">
                           {appointment.prescriptionUrl ? (
