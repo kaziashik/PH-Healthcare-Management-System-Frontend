@@ -3,6 +3,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import PayChoiceNotice from "@/components/modules/patient-book/pay-choice-notice";
 import UnpaidSlotNotice, {
   isUnpaidDayError,
 } from "@/components/modules/patient-book/unpaid-slot-notice";
@@ -30,6 +31,11 @@ export default function DoctorOpenSlots({
   const router = useRouter();
   const queryClient = useQueryClient();
   const [unpaidScheduleId, setUnpaidScheduleId] = useState<string | null>(null);
+  const [heldPayment, setHeldPayment] = useState<{
+    paymentUrl: string;
+    scheduleId: string;
+    whenLabel: string;
+  } | null>(null);
   const me = useGetMe();
   const role = me.data?.data?.role;
   const slots = useGetDoctorOpenSlots(doctorId);
@@ -65,7 +71,11 @@ export default function DoctorOpenSlots({
         onSuccess: (response) => {
           queryClient.invalidateQueries({ queryKey: ["open-slots", doctorId] });
           if (response.data?.paymentUrl) {
-            window.location.assign(response.data.paymentUrl);
+            setHeldPayment({
+              paymentUrl: response.data.paymentUrl,
+              scheduleId: slot.scheduleId,
+              whenLabel: `${formatSlotTime(slot.startDateTime)} – ${formatSlotTime(slot.endDateTime)}`,
+            });
             return;
           }
           toast.add({
@@ -93,8 +103,7 @@ export default function DoctorOpenSlots({
     <section id="times" className="panel scroll-mt-24 p-4">
       <h2 className="text-xl font-semibold">Free times</h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        Choose a time with {doctorName}. That opens bKash for this 20-minute
-        visit.
+        Choose a time with {doctorName}. You can pay now or within 5 minutes.
       </p>
       {slots.isPending ? (
         <p className="mt-4 text-sm text-muted-foreground">Loading times...</p>
@@ -126,7 +135,7 @@ export default function DoctorOpenSlots({
                       className="rounded-full border border-border bg-background px-3 py-1.5 text-sm transition hover:border-[#14b8a6] hover:bg-[#0f766e] hover:text-white disabled:opacity-60"
                     >
                       {paying
-                        ? "Opening bKash"
+                        ? "Holding this time"
                         : `${formatSlotTime(slot.startDateTime)} – ${formatSlotTime(slot.endDateTime)}`}
                     </button>
                   </li>
@@ -136,6 +145,13 @@ export default function DoctorOpenSlots({
           </div>
         ))}
       </div>
+      <PayChoiceNotice
+        open={heldPayment !== null}
+        paymentUrl={heldPayment?.paymentUrl ?? null}
+        scheduleId={heldPayment?.scheduleId ?? null}
+        whenLabel={heldPayment?.whenLabel ?? ""}
+        onClose={() => setHeldPayment(null)}
+      />
       <UnpaidSlotNotice
         open={unpaidScheduleId !== null}
         scheduleId={unpaidScheduleId}

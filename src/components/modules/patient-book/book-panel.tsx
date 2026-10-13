@@ -3,6 +3,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
+import PayChoiceNotice from "@/components/modules/patient-book/pay-choice-notice";
 import UnpaidSlotNotice, {
   isUnpaidDayError,
 } from "@/components/modules/patient-book/unpaid-slot-notice";
@@ -25,6 +26,11 @@ function formatSlotTime(iso: string) {
 export default function BookPanel({ doctorId }: { doctorId?: string }) {
   const queryClient = useQueryClient();
   const [unpaidScheduleId, setUnpaidScheduleId] = useState<string | null>(null);
+  const [heldPayment, setHeldPayment] = useState<{
+    paymentUrl: string;
+    scheduleId: string;
+    whenLabel: string;
+  } | null>(null);
   const doctor = useGetDoctor(doctorId ?? "");
   const slots = useGetDoctorOpenSlots(doctorId ?? "");
   const book = useBookAppointment();
@@ -61,7 +67,11 @@ export default function BookPanel({ doctorId }: { doctorId?: string }) {
         onSuccess: (response) => {
           queryClient.invalidateQueries({ queryKey: ["open-slots", doctorId] });
           if (response.data?.paymentUrl) {
-            window.location.assign(response.data.paymentUrl);
+            setHeldPayment({
+              paymentUrl: response.data.paymentUrl,
+              scheduleId: slot.scheduleId,
+              whenLabel: `${formatSlotTime(slot.startDateTime)} – ${formatSlotTime(slot.endDateTime)}`,
+            });
             return;
           }
           toast.add({
@@ -92,7 +102,7 @@ export default function BookPanel({ doctorId }: { doctorId?: string }) {
           Choose a time with {name ?? "this doctor"}.
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Each time is 20 minutes. Book and pay keeps that time for you.
+          Each time is 20 minutes. You can pay now or within 5 minutes.
         </p>
       </div>
       {doctor.isPending || slots.isPending ? (
@@ -130,10 +140,10 @@ export default function BookPanel({ doctorId }: { doctorId?: string }) {
                 >
                   {booking ? (
                     <>
-                      <Spinner /> Opening bKash
+                      <Spinner /> Holding this time
                     </>
                   ) : (
-                    "Book and pay"
+                    "Book"
                   )}
                 </Button>
               </article>
@@ -141,6 +151,13 @@ export default function BookPanel({ doctorId }: { doctorId?: string }) {
           })}
         </section>
       ))}
+      <PayChoiceNotice
+        open={heldPayment !== null}
+        paymentUrl={heldPayment?.paymentUrl ?? null}
+        scheduleId={heldPayment?.scheduleId ?? null}
+        whenLabel={heldPayment?.whenLabel ?? ""}
+        onClose={() => setHeldPayment(null)}
+      />
       <UnpaidSlotNotice
         open={unpaidScheduleId !== null}
         scheduleId={unpaidScheduleId}

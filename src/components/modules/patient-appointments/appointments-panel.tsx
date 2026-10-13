@@ -16,6 +16,7 @@ import { toast } from "@/components/ui/toast";
 import {
   useCancelAppointment,
   useGetMyAppointments,
+  usePayAppointment,
 } from "@/hooks/appointment.hook";
 import { formatChosenVisit } from "@/lib/visit-time";
 import type { AppointmentStatus } from "@/types/appointment.type";
@@ -38,6 +39,7 @@ export default function PatientAppointmentsPanel() {
     ...(status === "ALL" ? {} : { status }),
   });
   const cancelVisit = useCancelAppointment();
+  const payVisit = usePayAppointment();
   const appointments = data?.data ?? [];
 
   return (
@@ -90,6 +92,9 @@ export default function PatientAppointmentsPanel() {
                   const cancelling =
                     cancelVisit.isPending &&
                     cancelVisit.variables?.appointmentId === appointment.id;
+                  const paying =
+                    payVisit.isPending &&
+                    payVisit.variables?.appointmentId === appointment.id;
 
                   return (
                     <TableRow key={appointment.id}>
@@ -120,7 +125,75 @@ export default function PatientAppointmentsPanel() {
                               View prescription
                             </a>
                           ) : null}
-                          {appointment.status !== "CANCELLED" ? (
+                          {appointment.status === "PENDING" ? (
+                            <div className="flex flex-col items-end gap-1">
+                              <div className="flex justify-end gap-2">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  disabled={paying || cancelling}
+                                  onClick={() =>
+                                    payVisit.mutate(
+                                      { appointmentId: appointment.id },
+                                      {
+                                        onSuccess: (response) => {
+                                          if (response.data?.paymentUrl) {
+                                            window.location.assign(
+                                              response.data.paymentUrl,
+                                            );
+                                          }
+                                        },
+                                        onError: (error) => {
+                                          toast.add({
+                                            title: "Could not open payment",
+                                            description: apiErrorMessage(error),
+                                            type: "error",
+                                          });
+                                        },
+                                      },
+                                    )
+                                  }
+                                >
+                                  {paying ? <Spinner /> : "Pay"}
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  disabled={paying || cancelling}
+                                  onClick={() =>
+                                    cancelVisit.mutate(
+                                      { appointmentId: appointment.id },
+                                      {
+                                        onSuccess: (response) => {
+                                          toast.add({
+                                            title: "Booking cancelled",
+                                            description: response.message,
+                                            type: "success",
+                                          });
+                                        },
+                                        onError: (error) => {
+                                          toast.add({
+                                            title: "Could not cancel booking",
+                                            description: apiErrorMessage(error),
+                                            type: "error",
+                                          });
+                                        },
+                                      },
+                                    )
+                                  }
+                                >
+                                  {cancelling ? <Spinner /> : "Cancel"}
+                                </Button>
+                              </div>
+                              <span className="max-w-56 text-right text-xs text-muted-foreground">
+                                Pay within 5 minutes or this booking is
+                                cancelled.
+                              </span>
+                            </div>
+                          ) : null}
+                          {appointment.status !== "CANCELLED" &&
+                          appointment.status !== "PENDING" ? (
                             <div className="flex flex-col items-end gap-1">
                               <Button
                                 type="button"
