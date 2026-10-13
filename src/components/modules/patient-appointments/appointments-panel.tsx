@@ -1,5 +1,6 @@
 "use client";
 
+import { Video } from "lucide-react";
 import { useState } from "react";
 import ListPager from "@/components/modules/list-pager";
 import { Button } from "@/components/ui/button";
@@ -95,6 +96,12 @@ export default function PatientAppointmentsPanel() {
                   const paying =
                     payVisit.isPending &&
                     payVisit.variables?.appointmentId === appointment.id;
+                  const meetingLink =
+                    appointment.payment?.status === "PAID" &&
+                    appointment.status !== "PENDING" &&
+                    appointment.status !== "CANCELLED"
+                      ? appointment.schedule?.meetingLink
+                      : "";
 
                   return (
                     <TableRow key={appointment.id}>
@@ -115,6 +122,17 @@ export default function PatientAppointmentsPanel() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex flex-col items-end gap-2">
+                          {meetingLink ? (
+                            <a
+                              className="inline-flex items-center gap-1.5 text-sm font-medium underline underline-offset-4"
+                              href={meetingLink}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <Video className="size-3.5" aria-hidden="true" />
+                              Join visit
+                            </a>
+                          ) : null}
                           {appointment.prescriptionUrl ? (
                             <a
                               className="text-sm font-medium underline underline-offset-4"
