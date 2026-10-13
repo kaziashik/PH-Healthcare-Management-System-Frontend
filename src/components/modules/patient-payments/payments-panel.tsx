@@ -4,6 +4,7 @@ import {
   CalendarClock,
   Check,
   Clock,
+  FileText,
   Stethoscope,
   Undo2,
   Wallet,
@@ -11,8 +12,13 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useState } from "react";
+import ResumePreview from "@/components/modules/doctor-approval/resume-preview";
 import ListPager from "@/components/modules/list-pager";
 import { doctorInitials } from "@/components/modules/doctors/doctor-card";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "@/components/ui/toast";
+import apiClient from "@/lib/apiClient";
 import {
   Table,
   TableBody,
@@ -23,7 +29,7 @@ import {
 } from "@/components/ui/table";
 import { useGetMyPayments } from "@/hooks/appointment.hook";
 import { formatVisitRange } from "@/lib/visit-time";
-import type { PaymentStatus } from "@/types/appointment.type";
+import type { PaymentRecord, PaymentStatus } from "@/types/appointment.type";
 
 const statusMeta: Record<
   PaymentStatus,
@@ -109,8 +115,42 @@ function formatPaidAt(iso: string | null) {
 
 export default function PaymentsPanel() {
   const [page, setPage] = useState(1);
+  const [openingId, setOpeningId] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<{
+    url: string;
+    fileName: string;
+  } | null>(null);
   const { data, isPending, isError } = useGetMyPayments({ page, limit: 10 });
   const payments = data?.data ?? [];
+
+  const closeReceipt = () => {
+    setReceipt((current) => {
+      if (current) URL.revokeObjectURL(current.url);
+      return null;
+    });
+  };
+
+  const openReceipt = async (payment: PaymentRecord) => {
+    setOpeningId(payment.id);
+    try {
+      const blob = await apiClient<Blob>(`/payment/${payment.id}/receipt`, {
+        responseType: "blob",
+      });
+      const url = URL.createObjectURL(blob);
+      setReceipt((current) => {
+        if (current) URL.revokeObjectURL(current.url);
+        return { url, fileName: "invoice.pdf" };
+      });
+    } catch {
+      toast.add({
+        title: "Could not open receipt",
+        description: "The receipt is available after the payment is paid.",
+        type: "error",
+      });
+    } finally {
+      setOpeningId(null);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-5">
@@ -130,6 +170,7 @@ export default function PaymentsPanel() {
                 <TableHead>Visit</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Receipt</TableHead>
                 <TableHead>Paid</TableHead>
                 <TableHead>Refund</TableHead>
               </TableRow>
@@ -137,7 +178,7 @@ export default function PaymentsPanel() {
             <TableBody>
               {payments.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6}>No payments yet.</TableCell>
+                  <TableCell colSpan={7}>No payments yet.</TableCell>
                 </TableRow>
               ) : (
                 payments.map((payment) => {
@@ -199,6 +240,26 @@ export default function PaymentsPanel() {
                           {statusView.label}
                         </span>
                       </TableCell>
+                      <TableCell>
+                        {payment.status === "PAID" ? (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            disabled={openingId === payment.id}
+                            onClick={() => openReceipt(payment)}
+                          >
+                            {openingId === payment.id ? (
+                              <Spinner />
+                            ) : (
+                              <FileText aria-hidden="true" />
+                            )}
+                            View receipt
+                          </Button>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
                       <TableCell>{formatPaidAt(payment.paidAt)}</TableCell>
                       <TableCell>
                         {payment.refundAmount != null
@@ -218,6 +279,15 @@ export default function PaymentsPanel() {
         page={page}
         totalPages={data?.meta?.totalPages ?? 1}
         onPageChange={setPage}
+      />
+
+      <ResumePreview
+        open={!!receipt}
+        url={receipt?.url ?? null}
+        title="Appointment Invoice"
+        fileName={receipt?.fileName ?? "invoice.pdf"}
+        asPdf
+        onClose={closeReceipt}
       />
     </div>
   );

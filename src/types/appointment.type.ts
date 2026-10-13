@@ -76,6 +76,7 @@ export interface PaymentRecord {
   amount: number | string;
   currency: string;
   paidAt: string | null;
+  bkashTrxId?: string | null;
   refundAmount: number | string | null;
   refundReason: string | null;
   refundedAt: string | null;
@@ -83,13 +84,18 @@ export interface PaymentRecord {
   appointment: {
     id: string;
     status: AppointmentStatus;
+    serialNumber?: number | null;
+    joiningTime?: string | null;
     doctor?: {
       id: string;
       name: string;
       specialization: string;
       user?: { imageUrl?: string | null } | null;
     };
-    schedule?: Pick<Schedule, "startDateTime" | "endDateTime">;
+    schedule?: Pick<
+      Schedule,
+      "startDateTime" | "endDateTime" | "meetingLink"
+    >;
   };
 }
 
