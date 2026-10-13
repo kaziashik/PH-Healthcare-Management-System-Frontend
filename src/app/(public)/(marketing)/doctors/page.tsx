@@ -1,9 +1,7 @@
-import Link from "next/link";
 import { Suspense } from "react";
-import AppointmentShortcut from "@/components/modules/doctors/appointment-shortcut";
+import DoctorRosterActions from "@/components/modules/doctors/doctor-roster-actions";
 import DoctorsExplorer from "@/components/modules/doctors/doctors-explorer";
 import { DoctorCardSkeleton } from "@/components/modules/doctors/doctor-card";
-import { Button } from "@/components/ui/button";
 
 export default function DoctorsPage() {
   return (
@@ -17,16 +15,7 @@ export default function DoctorsPage() {
             specialty, fee, and experience.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            nativeButton={false}
-            render={<Link href="/apply">Apply as a doctor</Link>}
-          >
-            Apply as a doctor
-          </Button>
-          <AppointmentShortcut />
-        </div>
+        <DoctorRosterActions />
       </div>
       <Suspense
         fallback={

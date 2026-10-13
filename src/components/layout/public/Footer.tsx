@@ -1,6 +1,9 @@
+"use client";
+
 import { HeartPulse } from "lucide-react";
 import Link from "next/link";
 import Logo from "@/assets/svg/Logo";
+import { useGetMe } from "@/hooks/auth.hook";
 
 const groups = [
   {
@@ -39,6 +42,13 @@ const scenes = [
 ];
 
 export default function Footer() {
+  const role = useGetMe().data?.data?.role;
+  const linksFor = (group: (typeof groups)[number]) =>
+    group.links.filter(
+      (link) =>
+        link.href !== "/apply" || !role || role === "PATIENT",
+    );
+
   return (
     <footer className="bg-[#07141c] text-slate-300">
       <div className="overflow-hidden border-b border-white/10" aria-label="Clinic rooms">
@@ -86,7 +96,7 @@ export default function Footer() {
               {group.title}
             </p>
             <ul className="mt-4 space-y-2.5">
-              {group.links.map((link) => (
+              {linksFor(group).map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}

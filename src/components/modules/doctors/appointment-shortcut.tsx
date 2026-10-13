@@ -7,14 +7,7 @@ import { useGetMe } from "@/hooks/auth.hook";
 
 export default function AppointmentShortcut() {
   const role = useGetMe().data?.data?.role;
-  const href =
-    role === "PATIENT"
-      ? "/patient/appointments"
-      : role === "DOCTOR"
-        ? "/doctor/appointments"
-        : role
-          ? "/doctors#appointments"
-          : "/login";
+  const href = role === "PATIENT" ? "/patient/appointments" : "/login";
 
   return (
     <Button

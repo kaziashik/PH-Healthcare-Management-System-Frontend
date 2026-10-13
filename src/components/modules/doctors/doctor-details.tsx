@@ -70,21 +70,14 @@ export default function DoctorDetails({ doctorId }: { doctorId: string }) {
             id="appointment"
             className="flex scroll-mt-24 flex-col gap-2 sm:flex-row sm:flex-wrap"
           >
-            {role === "DOCTOR" ? (
-              <Button
-                nativeButton={false}
-                render={<Link href="/doctor/appointments">Appointment</Link>}
-              >
-                Appointment
-              </Button>
-            ) : (
+            {!role || role === "PATIENT" ? (
               <Button
                 nativeButton={false}
                 render={<Link href="#times">Appointment</Link>}
               >
                 Appointment
               </Button>
-            )}
+            ) : null}
             <Button
               variant="outline"
               nativeButton={false}

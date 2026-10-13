@@ -84,7 +84,7 @@ export default function Header() {
           { name: "Help", url: "/help" },
         ]
       : publicLinks),
-    ...(role === "DOCTOR" ? [] : [{ name: "Apply", url: "/apply" }]),
+    ...(!role || role === "PATIENT" ? [{ name: "Apply", url: "/apply" }] : []),
   ];
 
   return (

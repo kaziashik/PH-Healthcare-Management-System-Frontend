@@ -4,6 +4,7 @@ import { Stethoscope } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useGetMe } from "@/hooks/auth.hook";
 import type { Doctor } from "@/types";
 
 export function doctorInitials(name: string) {
@@ -26,6 +27,8 @@ export function doctorFeeLabel(fee: Doctor["consultationFee"]) {
 
 export default function DoctorCard({ doctor }: { doctor: Doctor }) {
   const [photoFailed, setPhotoFailed] = useState(false);
+  const role = useGetMe().data?.data?.role;
+  const canBook = !role || role === "PATIENT";
   const photo = photoFailed ? "" : doctorPhoto(doctor);
 
   return (
@@ -60,17 +63,17 @@ export default function DoctorCard({ doctor }: { doctor: Doctor }) {
           {doctor.experienceYears === 1 ? "year" : "years"}
         </p>
         <div className="mt-auto flex flex-col gap-2 sm:flex-row">
-          <Button
-            className="bg-[#0f766e] text-white hover:bg-[#115e59]"
-            nativeButton={false}
-            render={
-              <Link href={`/doctors/${doctor.id}#times`}>
-                Appointment
-              </Link>
-            }
-          >
-            Appointment
-          </Button>
+          {canBook ? (
+            <Button
+              className="bg-[#0f766e] text-white hover:bg-[#115e59]"
+              nativeButton={false}
+              render={
+                <Link href={`/doctors/${doctor.id}#times`}>Appointment</Link>
+              }
+            >
+              Appointment
+            </Button>
+          ) : null}
           <Button
             variant="outline"
             nativeButton={false}
