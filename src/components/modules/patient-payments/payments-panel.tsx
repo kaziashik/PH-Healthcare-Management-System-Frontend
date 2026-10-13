@@ -1,7 +1,18 @@
 "use client";
 
+import {
+  CalendarClock,
+  Check,
+  Clock,
+  Stethoscope,
+  Undo2,
+  Wallet,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { useState } from "react";
 import ListPager from "@/components/modules/list-pager";
+import { doctorInitials } from "@/components/modules/doctors/doctor-card";
 import {
   Table,
   TableBody,
@@ -12,6 +23,89 @@ import {
 } from "@/components/ui/table";
 import { useGetMyPayments } from "@/hooks/appointment.hook";
 import { formatVisitRange } from "@/lib/visit-time";
+import type { PaymentStatus } from "@/types/appointment.type";
+
+const statusMeta: Record<
+  PaymentStatus,
+  { label: string; icon: LucideIcon; className: string }
+> = {
+  PAID: {
+    label: "Paid",
+    icon: Check,
+    className: "bg-primary/15 text-primary",
+  },
+  UNPAID: {
+    label: "Unpaid",
+    icon: Clock,
+    className: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+  },
+  FAILED: {
+    label: "Failed",
+    icon: X,
+    className: "bg-destructive/10 text-destructive",
+  },
+  CANCELLED: {
+    label: "Cancelled",
+    icon: X,
+    className: "bg-destructive/10 text-destructive",
+  },
+  REFUNDED: {
+    label: "Refunded",
+    icon: Undo2,
+    className: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
+  },
+};
+
+function DoctorFace({
+  name,
+  imageUrl,
+}: {
+  name: string;
+  imageUrl?: string | null;
+}) {
+  const [failed, setFailed] = useState(false);
+  const photo = !failed && imageUrl?.trim() ? imageUrl : "";
+
+  if (photo) {
+    return (
+      <img
+        src={photo}
+        alt=""
+        className="size-10 shrink-0 rounded-full object-cover"
+        onError={() => setFailed(true)}
+      />
+    );
+  }
+
+  return (
+    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/15 text-xs font-semibold text-primary">
+      {doctorInitials(name)}
+    </span>
+  );
+}
+
+function money(currency: string, amount: number | string | null | undefined) {
+  if (amount == null || amount === "") return "—";
+  if (currency === "BDT") return `৳${amount}`;
+  return `${currency} ${amount}`;
+}
+
+function formatPaidAt(iso: string | null) {
+  if (!iso) return "—";
+  const normalized = iso
+    .replace(/T(\d{2}):(\d{2}):(\d{2}):(\d+)/, "T$1:$2:$3.$4")
+    .replace(" GMT", "")
+    .replace(/([+-])(\d{2})(\d{2})$/, "$1$2:$3");
+  const date = new Date(normalized);
+  if (Number.isNaN(date.getTime())) return iso;
+  return date.toLocaleString(undefined, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
 
 export default function PaymentsPanel() {
   const [page, setPage] = useState(1);
@@ -46,31 +140,74 @@ export default function PaymentsPanel() {
                   <TableCell colSpan={6}>No payments yet.</TableCell>
                 </TableRow>
               ) : (
-                payments.map((payment) => (
-                  <TableRow key={payment.id}>
-                    <TableCell>
-                      {payment.appointment.doctor?.name ?? "—"}
-                    </TableCell>
-                    <TableCell>
-                      {payment.appointment.schedule
-                        ? formatVisitRange(
-                            payment.appointment.schedule.startDateTime,
-                            payment.appointment.schedule.endDateTime,
-                          )
-                        : "—"}
-                    </TableCell>
-                    <TableCell>
-                      {payment.currency} {payment.amount}
-                    </TableCell>
-                    <TableCell>{payment.status}</TableCell>
-                    <TableCell>{payment.paidAt ?? "—"}</TableCell>
-                    <TableCell>
-                      {payment.refundAmount != null
-                        ? `${payment.refundAmount}`
-                        : "—"}
-                    </TableCell>
-                  </TableRow>
-                ))
+                payments.map((payment) => {
+                  const doctorName = payment.appointment.doctor?.name ?? "Doctor";
+                  const statusView = statusMeta[payment.status];
+                  const StatusIcon = statusView.icon;
+                  const visit = payment.appointment.schedule
+                    ? formatVisitRange(
+                        payment.appointment.schedule.startDateTime,
+                        payment.appointment.schedule.endDateTime,
+                      )
+                    : "—";
+
+                  return (
+                    <TableRow key={payment.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <DoctorFace
+                            name={doctorName}
+                            imageUrl={payment.appointment.doctor?.user?.imageUrl}
+                          />
+                          <div className="min-w-0">
+                            <p className="font-medium">{doctorName}</p>
+                            <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Stethoscope
+                                className="size-3.5 shrink-0"
+                                aria-hidden="true"
+                              />
+                              <span className="truncate">
+                                {payment.appointment.doctor?.specialization}
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className="inline-flex items-center gap-1.5">
+                          <CalendarClock
+                            className="size-3.5 shrink-0 text-muted-foreground"
+                            aria-hidden="true"
+                          />
+                          {visit}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="inline-flex items-center gap-1.5 font-medium">
+                          <Wallet
+                            className="size-3.5 text-muted-foreground"
+                            aria-hidden="true"
+                          />
+                          {money(payment.currency, payment.amount)}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${statusView.className}`}
+                        >
+                          <StatusIcon className="size-3.5" aria-hidden="true" />
+                          {statusView.label}
+                        </span>
+                      </TableCell>
+                      <TableCell>{formatPaidAt(payment.paidAt)}</TableCell>
+                      <TableCell>
+                        {payment.refundAmount != null
+                          ? money(payment.currency, payment.refundAmount)
+                          : "—"}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>
