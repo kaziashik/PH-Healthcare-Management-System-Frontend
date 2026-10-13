@@ -64,7 +64,7 @@ export default function DoctorCard({ doctor }: { doctor: Doctor }) {
             className="bg-[#0f766e] text-white hover:bg-[#115e59]"
             nativeButton={false}
             render={
-              <Link href={`/doctors/${doctor.id}#appointment`}>
+              <Link href={`/doctors/${doctor.id}#times`}>
                 Appointment
               </Link>
             }

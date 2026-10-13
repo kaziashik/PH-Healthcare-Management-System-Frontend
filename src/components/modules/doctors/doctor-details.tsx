@@ -9,6 +9,7 @@ import DoctorCard, {
   doctorInitials,
   doctorPhoto,
 } from "./doctor-card";
+import DoctorOpenSlots from "./doctor-open-slots";
 
 export default function DoctorDetails({ doctorId }: { doctorId: string }) {
   const me = useGetMe();
@@ -69,31 +70,17 @@ export default function DoctorDetails({ doctorId }: { doctorId: string }) {
             id="appointment"
             className="flex scroll-mt-24 flex-col gap-2 sm:flex-row sm:flex-wrap"
           >
-            {role === "PATIENT" ? (
-              <Button
-                nativeButton={false}
-                render={<Link href="/patient/book">Appointment</Link>}
-              >
-                Appointment
-              </Button>
-            ) : role === "DOCTOR" ? (
+            {role === "DOCTOR" ? (
               <Button
                 nativeButton={false}
                 render={<Link href="/doctor/appointments">Appointment</Link>}
               >
                 Appointment
               </Button>
-            ) : role ? (
-              <Button
-                nativeButton={false}
-                render={<Link href="/doctors#appointments">Appointment</Link>}
-              >
-                Appointment
-              </Button>
             ) : (
               <Button
                 nativeButton={false}
-                render={<Link href="/login">Appointment</Link>}
+                render={<Link href="#times">Appointment</Link>}
               >
                 Appointment
               </Button>
@@ -113,6 +100,8 @@ export default function DoctorDetails({ doctorId }: { doctorId: string }) {
           </div>
         </div>
       </section>
+
+      <DoctorOpenSlots doctorId={doctor.id} doctorName={doctor.name} />
 
       <section className="panel p-4">
         <h2 className="text-xl font-semibold">Overview</h2>

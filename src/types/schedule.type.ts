@@ -22,6 +22,13 @@ export interface Schedule {
   };
 }
 
+export interface OpenSlot {
+  scheduleId: string;
+  serialNumber: number;
+  startDateTime: string;
+  endDateTime: string;
+}
+
 export interface ScheduleListParams {
   page?: number;
   limit?: number;

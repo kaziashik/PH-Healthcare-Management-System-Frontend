@@ -2,6 +2,7 @@ import apiClient from "@/lib/apiClient";
 import type { ApiResponse } from "@/types/api.type";
 import type {
   CreateSchedulePayload,
+  OpenSlot,
   Schedule,
   ScheduleListParams,
   UpdateSchedulePayload,
@@ -17,6 +18,12 @@ export function getTodaysSchedules(params: ScheduleListParams) {
   return apiClient<ApiResponse<Schedule[]>>("/schedule/todays-schedule", {
     params,
   });
+}
+
+export function getDoctorOpenSlots(doctorId: string) {
+  return apiClient<ApiResponse<OpenSlot[]>>(
+    `/schedule/open-slots/${doctorId}`,
+  );
 }
 
 export function getFutureSchedules(params: ScheduleListParams) {

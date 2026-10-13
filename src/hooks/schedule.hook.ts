@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createSchedule,
   deleteSchedule,
+  getDoctorOpenSlots,
   getFutureSchedules,
   getMySchedules,
   getTodaysSchedules,
@@ -27,6 +28,14 @@ export function useGetTodaysSchedules(params: ScheduleListParams) {
   });
 }
 
+export function useGetDoctorOpenSlots(doctorId: string) {
+  return useQuery({
+    queryKey: ["open-slots", doctorId],
+    queryFn: () => getDoctorOpenSlots(doctorId),
+    enabled: Boolean(doctorId),
+  });
+}
+
 export function useGetFutureSchedules(params: ScheduleListParams) {
   return useQuery({
     queryKey: ["future-schedules", params],
@@ -40,6 +49,7 @@ function useRefreshSchedules() {
     queryClient.invalidateQueries({ queryKey: ["schedules"] });
     queryClient.invalidateQueries({ queryKey: ["todays-schedules"] });
     queryClient.invalidateQueries({ queryKey: ["future-schedules"] });
+    queryClient.invalidateQueries({ queryKey: ["open-slots"] });
   };
 }
 
