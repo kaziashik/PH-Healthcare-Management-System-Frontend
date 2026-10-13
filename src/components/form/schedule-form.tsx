@@ -11,11 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
-import {
-  useCreateSchedule,
-  usePublishSchedule,
-  useUpdateSchedule,
-} from "@/hooks/schedule.hook";
+import { useCreateSchedule, useUpdateSchedule } from "@/hooks/schedule.hook";
 import {
   combineLocalDateTime,
   localDateInput,
@@ -50,14 +46,10 @@ export default function ScheduleForm({
   onDone?: () => void;
 }) {
   const createSchedule = useCreateSchedule();
-  const publishSchedule = usePublishSchedule();
   const updateSchedule = useUpdateSchedule();
   const dateLocked = schedule?.status === "PUBLISHED";
   const timeLocked = schedule ? scheduleTimeIsLocked(schedule) : false;
-  const pending =
-    createSchedule.isPending ||
-    publishSchedule.isPending ||
-    updateSchedule.isPending;
+  const pending = createSchedule.isPending || updateSchedule.isPending;
 
   const form = useForm({
     defaultValues: {
@@ -100,8 +92,10 @@ export default function ScheduleForm({
 
       const onSuccess = (response: { message: string }) => {
         toast.add({
-          title: schedule ? "Schedule updated" : "Schedule created",
-          description: response.message,
+          title: schedule ? "Schedule updated" : "Draft saved",
+          description: schedule
+            ? response.message
+            : "Publish this day from the list when patients should book it.",
           type: "success",
         });
         if (!schedule) {
@@ -132,28 +126,7 @@ export default function ScheduleForm({
           endDateTime: payload.endDateTime ?? "",
           meetingLink: payload.meetingLink,
         },
-        {
-          onSuccess: (response) => {
-            const scheduleId = response.data?.id;
-            if (!scheduleId) {
-              onError(new Error("The day was saved but could not be published."));
-              return;
-            }
-            publishSchedule.mutate(scheduleId, {
-              onSuccess: () => {
-                toast.add({
-                  title: "Day published",
-                  description: "Patients can book the open times on this day.",
-                  type: "success",
-                });
-                form.reset();
-                onDone?.();
-              },
-              onError,
-            });
-          },
-          onError,
-        },
+        { onSuccess, onError },
       );
     },
   });
@@ -273,12 +246,12 @@ export default function ScheduleForm({
         <Button disabled={pending} type="submit">
           {pending ? (
             <>
-              <Spinner /> {schedule ? "Saving" : "Publishing"}
+              <Spinner /> Saving
             </>
           ) : schedule ? (
             "Save changes"
           ) : (
-            "Publish"
+            "Save draft"
           )}
         </Button>
       </FieldGroup>

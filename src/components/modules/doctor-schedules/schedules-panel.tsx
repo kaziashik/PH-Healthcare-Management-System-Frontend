@@ -112,7 +112,7 @@ export default function SchedulesPanel() {
                                 publishSchedule.mutate(schedule.id, {
                                   onSuccess: (response) => {
                                     toast.add({
-                                      title: "Schedule published",
+                                      title: "Day published",
                                       description: response.message,
                                       type: "success",
                                     });
