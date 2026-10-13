@@ -28,7 +28,6 @@ export default function BookPanel({ doctorId }: { doctorId?: string }) {
   const [unpaidScheduleId, setUnpaidScheduleId] = useState<string | null>(null);
   const [heldPayment, setHeldPayment] = useState<{
     paymentUrl: string;
-    scheduleId: string;
     whenLabel: string;
   } | null>(null);
   const doctor = useGetDoctor(doctorId ?? "");
@@ -69,7 +68,6 @@ export default function BookPanel({ doctorId }: { doctorId?: string }) {
           if (response.data?.paymentUrl) {
             setHeldPayment({
               paymentUrl: response.data.paymentUrl,
-              scheduleId: slot.scheduleId,
               whenLabel: `${formatSlotTime(slot.startDateTime)} – ${formatSlotTime(slot.endDateTime)}`,
             });
             return;
@@ -154,7 +152,6 @@ export default function BookPanel({ doctorId }: { doctorId?: string }) {
       <PayChoiceNotice
         open={heldPayment !== null}
         paymentUrl={heldPayment?.paymentUrl ?? null}
-        scheduleId={heldPayment?.scheduleId ?? null}
         whenLabel={heldPayment?.whenLabel ?? ""}
         onClose={() => setHeldPayment(null)}
       />

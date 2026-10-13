@@ -33,7 +33,6 @@ export default function DoctorOpenSlots({
   const [unpaidScheduleId, setUnpaidScheduleId] = useState<string | null>(null);
   const [heldPayment, setHeldPayment] = useState<{
     paymentUrl: string;
-    scheduleId: string;
     whenLabel: string;
   } | null>(null);
   const me = useGetMe();
@@ -73,7 +72,6 @@ export default function DoctorOpenSlots({
           if (response.data?.paymentUrl) {
             setHeldPayment({
               paymentUrl: response.data.paymentUrl,
-              scheduleId: slot.scheduleId,
               whenLabel: `${formatSlotTime(slot.startDateTime)} – ${formatSlotTime(slot.endDateTime)}`,
             });
             return;
@@ -148,7 +146,6 @@ export default function DoctorOpenSlots({
       <PayChoiceNotice
         open={heldPayment !== null}
         paymentUrl={heldPayment?.paymentUrl ?? null}
-        scheduleId={heldPayment?.scheduleId ?? null}
         whenLabel={heldPayment?.whenLabel ?? ""}
         onClose={() => setHeldPayment(null)}
       />
