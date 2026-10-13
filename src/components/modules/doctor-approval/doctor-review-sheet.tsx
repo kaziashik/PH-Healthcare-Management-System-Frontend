@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useApproveDoctor, useGetAllDoctors } from "@/hooks/doctor.hook";
 import type { ApproveDoctorPayload, Doctor, DoctorParams } from "@/types";
 import { useState } from "react";
+import ResumePreview from "./resume-preview";
 
 interface Props extends DoctorParams {
   selectedId: string;
@@ -55,6 +56,7 @@ export default function DoctorReviewSheet({
 }: Props) {
   const [confirmRejection, setConfirmRejection] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [resumeOpen, setResumeOpen] = useState(false);
 
   const { data } = useGetAllDoctors(params);
   const { mutate: verify, isPending } = useApproveDoctor();
@@ -64,6 +66,7 @@ export default function DoctorReviewSheet({
   const handleClose = () => {
     setConfirmRejection(false);
     setRejectionReason("");
+    setResumeOpen(false);
     onClose();
   };
 
@@ -106,14 +109,13 @@ export default function DoctorReviewSheet({
             <div>
               <dt className="text-xs text-muted-foreground">Resume</dt>
               <dd className="mt-0.5">
-                <a
+                <button
+                  type="button"
                   className="underline underline-offset-4"
-                  href={selectedDoctor.resume}
-                  target="_blank"
-                  rel="noreferrer"
+                  onClick={() => setResumeOpen(true)}
                 >
                   Open resume
-                </a>
+                </button>
               </dd>
             </div>
           ) : null}
@@ -172,6 +174,12 @@ export default function DoctorReviewSheet({
           </SheetFooter>
         ) : null}
       </SheetContent>
+      <ResumePreview
+        open={resumeOpen}
+        url={selectedDoctor.resume ?? null}
+        doctorName={selectedDoctor.name}
+        onClose={() => setResumeOpen(false)}
+      />
     </Sheet>
   );
 }
