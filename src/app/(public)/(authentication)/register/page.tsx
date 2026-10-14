@@ -1,29 +1,10 @@
-import BrandMark from "@/components/layout/brand-mark";
 import { RegisterForm } from "@/components/form/register-form";
-
-import Link from "next/link";
 
 export default function RegisterPage() {
   return (
-    <div className="grid min-h-svh lg:grid-cols-2">
-      <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <Link href="/">
-            <BrandMark />
-          </Link>
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-sm">
-            <RegisterForm />
-          </div>
-        </div>
-      </div>
-      <div className="relative hidden bg-muted lg:block">
-        <img
-          src="/register.jpg"
-          alt="Clinic hallway"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
+    <div className="flex min-h-svh items-center justify-center overflow-y-auto bg-[#041318] bg-[radial-gradient(circle_at_top,#0e3a42_0%,#041318_58%)] px-4 py-10">
+      <div className="w-full max-w-[440px] rounded-[28px] border border-[#1d4c57] bg-[#0b242c]/95 px-6 py-8 shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:px-8">
+        <RegisterForm />
       </div>
     </div>
   );

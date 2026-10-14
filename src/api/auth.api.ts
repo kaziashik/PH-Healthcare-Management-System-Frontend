@@ -19,7 +19,7 @@ export function verifyAccount(payload: VerifyAccountPayload) {
   return apiClient("/auth/verify-email", { method: "POST", body: payload });
 }
 
-export function userRegistration(payload: RegistrationPayload) {
+export function userRegistration(payload: RegistrationPayload | FormData) {
   return apiClient("/auth/register", { method: "POST", body: payload });
 }
 
