@@ -13,8 +13,8 @@ const dashboardRoute: Record<UserRole, string> = {
 };
 
 const profileRoute: Record<UserRole, string> = {
-  SUPER_ADMIN: "/change-password",
-  ADMIN: "/change-password",
+  SUPER_ADMIN: "/admin/profile",
+  ADMIN: "/admin/profile",
   DOCTOR: "/doctor/profile",
   PATIENT: "/patient/profile",
 };

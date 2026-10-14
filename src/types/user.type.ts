@@ -11,6 +11,25 @@ export interface PatientAccount {
   medicalHistory: string | null;
 }
 
+export interface DoctorAccount {
+  contactNumber: string | null;
+  address: string | null;
+  specialization: string;
+  licenseNumber: string;
+  qualifications: string;
+  experienceYears: number;
+  bio: string | null;
+  consultationFee: string | number | null;
+  verificationStatus: "PENDING" | "APPROVED" | "REJECTED";
+}
+
+export interface AdminAccount {
+  organizationEmail: string;
+  personalEmail: string;
+  contactNumber: string | null;
+  address: string | null;
+}
+
 export interface User {
   id: string;
   name: string;
@@ -29,6 +48,8 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   patient?: PatientAccount | null;
+  doctor?: DoctorAccount | null;
+  admin?: AdminAccount | null;
 }
 
 export interface CreateManagedAccountPayload {

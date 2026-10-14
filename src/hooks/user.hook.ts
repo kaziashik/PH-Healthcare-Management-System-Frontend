@@ -57,6 +57,7 @@ function useRefreshMe() {
 
   return () => {
     queryClient.invalidateQueries({ queryKey: ["user"] });
+    queryClient.invalidateQueries({ queryKey: ["doctors"] });
   };
 }
 
