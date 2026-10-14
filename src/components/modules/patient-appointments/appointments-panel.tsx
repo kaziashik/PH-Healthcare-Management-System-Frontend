@@ -3,6 +3,7 @@
 import {
   CalendarCheck,
   CalendarClock,
+  CalendarPlus,
   Check,
   Clock,
   FileText,
@@ -12,6 +13,7 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import ListPager from "@/components/modules/list-pager";
 import PrescriptionRecord from "@/components/modules/prescriptions/prescription-record";
@@ -112,7 +114,8 @@ function meetingHref(appointment: Appointment) {
   const paid =
     appointment.payment?.status === "PAID" &&
     appointment.status !== "PENDING" &&
-    appointment.status !== "CANCELLED";
+    appointment.status !== "CANCELLED" &&
+    appointment.status !== "COMPLETED";
   return paid ? appointment.schedule?.meetingLink : "";
 }
 
@@ -240,7 +243,21 @@ export default function PatientAppointmentsPanel() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {meetingLink ? (
+                        {appointment.status === "COMPLETED" &&
+                        appointment.doctor?.id ? (
+                          <Button
+                            size="sm"
+                            nativeButton={false}
+                            render={
+                              <Link
+                                href={`/patient/book?doctorId=${appointment.doctor.id}&followUp=1`}
+                              />
+                            }
+                          >
+                            <CalendarPlus aria-hidden="true" />
+                            Follow-up
+                          </Button>
+                        ) : meetingLink ? (
                           <Button
                             size="sm"
                             nativeButton={false}

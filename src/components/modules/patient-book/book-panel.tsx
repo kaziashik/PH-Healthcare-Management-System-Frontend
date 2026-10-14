@@ -23,7 +23,13 @@ function formatSlotTime(iso: string) {
   });
 }
 
-export default function BookPanel({ doctorId }: { doctorId?: string }) {
+export default function BookPanel({
+  doctorId,
+  followUp = false,
+}: {
+  doctorId?: string;
+  followUp?: boolean;
+}) {
   const queryClient = useQueryClient();
   const [unpaidScheduleId, setUnpaidScheduleId] = useState<string | null>(null);
   const [heldPayment, setHeldPayment] = useState<{
@@ -97,10 +103,12 @@ export default function BookPanel({ doctorId }: { doctorId?: string }) {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">
-          Choose a time with {name ?? "this doctor"}.
+          {followUp ? "Follow-up" : "Choose a time"} with {name ?? "this doctor"}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Each time is 20 minutes. You can pay now or within 5 minutes.
+          {followUp
+            ? "Pick another free time on this doctor's schedule. Each time is 20 minutes."
+            : "Each time is 20 minutes. You can pay now or within 5 minutes."}
         </p>
       </div>
       {doctor.isPending || slots.isPending ? (

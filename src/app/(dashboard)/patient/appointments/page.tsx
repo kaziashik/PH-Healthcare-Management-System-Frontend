@@ -6,8 +6,8 @@ export default function PatientAppointmentsPage() {
       <div className="mb-5">
         <h1 className="text-2xl font-bold tracking-tight">Appointments</h1>
         <p className="text-sm text-muted-foreground">
-          A paid visit shows the doctor, the date, your 20-minute time, and the
-          meeting link. Pay within 5 minutes, or that booking is cancelled.
+          A paid visit shows the meeting link. After the visit is completed,
+          Follow-up opens that doctor's schedule so you can book again.
         </p>
       </div>
       <PatientAppointmentsPanel />
