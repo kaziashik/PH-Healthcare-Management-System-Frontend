@@ -2,6 +2,15 @@ export type UserRole = "SUPER_ADMIN" | "ADMIN" | "DOCTOR" | "PATIENT";
 
 export type UserStatus = "ACTIVE" | "BLOCKED" | "DELETED";
 
+export interface PatientAccount {
+  contactNumber: string | null;
+  address: string | null;
+  gender: "MALE" | "FEMALE" | "OTHER" | null;
+  dateOfBirth: string | null;
+  bloodGroup: string | null;
+  medicalHistory: string | null;
+}
+
 export interface User {
   id: string;
   name: string;
@@ -19,6 +28,7 @@ export interface User {
   deletedAt: null | string;
   createdAt: string;
   updatedAt: string;
+  patient?: PatientAccount | null;
 }
 
 export interface CreateManagedAccountPayload {

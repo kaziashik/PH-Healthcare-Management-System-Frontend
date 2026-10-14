@@ -5,6 +5,8 @@ import {
   getAdmins,
   getPatients,
   updateAccountStatus,
+  updateMyProfile,
+  updateProfileImage,
 } from "@/api/user.api";
 import type { AccountListParams } from "@/types/user.type";
 
@@ -47,6 +49,32 @@ export function useCreateSuperAdmin() {
   return useMutation({
     mutationFn: createSuperAdmin,
     onSuccess: refreshAccounts,
+  });
+}
+
+function useRefreshMe() {
+  const queryClient = useQueryClient();
+
+  return () => {
+    queryClient.invalidateQueries({ queryKey: ["user"] });
+  };
+}
+
+export function useUpdateMyProfile() {
+  const refreshMe = useRefreshMe();
+
+  return useMutation({
+    mutationFn: updateMyProfile,
+    onSuccess: refreshMe,
+  });
+}
+
+export function useUpdateProfileImage() {
+  const refreshMe = useRefreshMe();
+
+  return useMutation({
+    mutationFn: updateProfileImage,
+    onSuccess: refreshMe,
   });
 }
 
