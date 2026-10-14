@@ -1,22 +1,46 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { Menu, Stethoscope, X } from "lucide-react";
+import {
+  BookOpen,
+  CircleHelp,
+  ClipboardPlus,
+  House,
+  Info,
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  Mail,
+  Menu,
+  Search,
+  Stethoscope,
+  UserPlus,
+  UserRound,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import AccountPill from "@/components/layout/account-pill";
+import BrandMark from "@/components/layout/brand-mark";
 import ThemeToggle from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { useGetMe, useLogout } from "@/hooks/auth.hook";
 import type { UserRole } from "@/types";
 
-const publicLinks = [
-  { name: "Home", url: "/" },
-  { name: "Doctors", url: "/doctors" },
-  { name: "About", url: "/about-us" },
-  { name: "Contact", url: "/contact" },
+type NavLink = {
+  name: string;
+  url: string;
+  icon: LucideIcon;
+};
+
+const guestLinks: NavLink[] = [
+  { name: "Home", url: "/", icon: House },
+  { name: "Doctors", url: "/doctors", icon: Stethoscope },
+  { name: "About", url: "/about-us", icon: Info },
+  { name: "Contact", url: "/contact", icon: Mail },
 ];
 
 const dashboardRoute: Record<UserRole, string> = {
@@ -35,6 +59,14 @@ const profileRoute: Record<UserRole, string> = {
 
 const barButton =
   "border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white";
+
+const outlinePill =
+  "h-10 rounded-full border-white/30 bg-transparent px-4 text-white hover:bg-white/10 hover:text-white";
+
+function isCurrent(pathname: string, url: string) {
+  if (url === "/") return pathname === "/";
+  return pathname === url || pathname.startsWith(`${url}/`);
+}
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -67,56 +99,67 @@ export default function Header() {
   };
 
   useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
     };
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
+    };
   }, [open]);
 
-  const links = [
+  const links: NavLink[] = [
     ...(role
       ? [
-          ...publicLinks.slice(0, 2),
-          { name: "Dashboard", url: dashboardRoute[role] },
-          { name: "Journal", url: "/journal" },
-          { name: "Help", url: "/help" },
+          ...guestLinks.slice(0, 2),
+          { name: "Dashboard", url: dashboardRoute[role], icon: LayoutDashboard },
+          { name: "Journal", url: "/journal", icon: BookOpen },
+          { name: "Help", url: "/help", icon: CircleHelp },
         ]
-      : publicLinks),
-    ...(!role || role === "PATIENT" ? [{ name: "Apply", url: "/apply" }] : []),
+      : guestLinks),
+    ...(!role || role === "PATIENT"
+      ? [{ name: "Apply", url: "/apply", icon: ClipboardPlus }]
+      : []),
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#06282f] text-white">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2.5 font-semibold tracking-tight">
-          <span className="flex size-9 items-center justify-center rounded-full bg-[#14b8a6] text-[#042028]">
-            <Stethoscope className="size-5" aria-hidden="true" />
-          </span>
-          <span>PH Healthcare</span>
+    <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#06282f]/95 text-white backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
+        <Link href="/" className="shrink-0 text-white">
+          <BrandMark />
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-0.5 min-[1100px]:flex">
           {links.map((link) => {
-            const current =
-              link.url === "/"
-                ? pathname === "/"
-                : pathname === link.url || pathname.startsWith(`${link.url}/`);
+            const current = isCurrent(pathname, link.url);
+            const Icon = link.icon;
             return (
               <Link
                 key={link.url}
                 href={link.url}
                 aria-current={current ? "page" : undefined}
-                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${current ? "bg-white/15 text-white" : "text-white/75 hover:bg-white/10 hover:text-white"}`}
+                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
+                  current
+                    ? "bg-white/15 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]"
+                    : "text-white/75 hover:bg-white/10 hover:text-white"
+                }`}
               >
+                <Icon className="size-4 shrink-0" aria-hidden="true" />
                 {link.name}
               </Link>
             );
           })}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden shrink-0 items-center gap-2 min-[1100px]:flex">
           <ThemeToggle className={barButton} />
           {isLoading ? null : user && role ? (
             <AccountPill
@@ -129,24 +172,35 @@ export default function Header() {
             <>
               <Button
                 variant="outline"
-                className="h-10 rounded-full border-white/25 bg-[#08343c] px-4 text-white hover:bg-[#0c4250] hover:text-white"
+                className={outlinePill}
                 nativeButton={false}
-                render={<Link href="/login">Login</Link>}
+                render={<Link href="/login" />}
               >
+                <LogIn aria-hidden="true" />
                 Login
               </Button>
               <Button
-                className="rounded-full bg-white text-[#06282f] hover:bg-white/90"
+                variant="outline"
+                className={outlinePill}
                 nativeButton={false}
-                render={<Link href="/doctors">Find a doctor</Link>}
+                render={<Link href="/register" />}
               >
+                <UserPlus aria-hidden="true" />
+                Sign up
+              </Button>
+              <Button
+                className="h-10 rounded-full bg-white px-4 text-[#06282f] hover:bg-white/90"
+                nativeButton={false}
+                render={<Link href="/doctors" />}
+              >
+                <Search aria-hidden="true" />
                 Find a doctor
               </Button>
             </>
           )}
         </div>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2 min-[1100px]:hidden">
           {user && role ? (
             <AccountPill
               name={user.name}
@@ -160,7 +214,7 @@ export default function Header() {
             type="button"
             variant="outline"
             size="icon"
-            className={barButton}
+            className={`size-10 rounded-full ${barButton}`}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen((current) => !current)}
@@ -171,44 +225,91 @@ export default function Header() {
       </div>
 
       {open ? (
-        <nav className="flex flex-col gap-2 border-t border-white/10 px-4 py-4 md:hidden">
-          {links.map((link) => (
-            <Link
-              key={link.url}
-              href={link.url}
-              className="rounded-md px-3 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
-              onClick={() => setOpen(false)}
-            >
-              {link.name}
-            </Link>
-          ))}
-          {user && role ? (
-            <>
-              <Link
-                href={profileRoute[role]}
-                className="rounded-md px-3 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
-                onClick={() => setOpen(false)}
-              >
-                Profile
-              </Link>
-              <button
-                type="button"
-                className="rounded-md px-3 py-3 text-left text-sm font-medium text-white/90 hover:bg-white/10"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <Link
-              href="/login"
-              className="rounded-md px-3 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
-              onClick={() => setOpen(false)}
-            >
-              Login
-            </Link>
-          )}
-        </nav>
+        <>
+          <button
+            type="button"
+            className="fixed inset-0 top-16 bg-[#02161a]/70 min-[1100px]:hidden"
+            aria-label="Close menu"
+            onClick={() => setOpen(false)}
+          />
+          <nav className="relative z-50 flex max-h-[calc(100dvh-4rem)] flex-col gap-1 overflow-y-auto border-t border-white/10 bg-[#06282f] px-4 py-4 min-[1100px]:hidden">
+            {links.map((link) => {
+              const current = isCurrent(pathname, link.url);
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.url}
+                  href={link.url}
+                  aria-current={current ? "page" : undefined}
+                  className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium ${
+                    current
+                      ? "bg-white/15 text-white"
+                      : "text-white/85 hover:bg-white/10"
+                  }`}
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="flex size-9 items-center justify-center rounded-lg bg-white/10">
+                    <Icon className="size-4" aria-hidden="true" />
+                  </span>
+                  {link.name}
+                </Link>
+              );
+            })}
+            {user && role ? (
+              <>
+                <Link
+                  href={profileRoute[role]}
+                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-white/85 hover:bg-white/10"
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="flex size-9 items-center justify-center rounded-lg bg-white/10">
+                    <UserRound className="size-4" aria-hidden="true" />
+                  </span>
+                  Profile
+                </Link>
+                <button
+                  type="button"
+                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium text-white/85 hover:bg-white/10"
+                  onClick={handleLogout}
+                >
+                  <span className="flex size-9 items-center justify-center rounded-lg bg-white/10">
+                    <LogOut className="size-4" aria-hidden="true" />
+                  </span>
+                  Logout
+                </button>
+              </>
+            ) : (
+              <div className="mt-3 grid gap-2">
+                <Button
+                  variant="outline"
+                  className={`${outlinePill} w-full`}
+                  nativeButton={false}
+                  render={<Link href="/login" />}
+                >
+                  <LogIn aria-hidden="true" />
+                  Login
+                </Button>
+                <Button
+                  variant="outline"
+                  className={`${outlinePill} w-full`}
+                  nativeButton={false}
+                  render={<Link href="/register" />}
+                >
+                  <UserPlus aria-hidden="true" />
+                  Sign up
+                </Button>
+                <Button
+                  className="h-10 w-full rounded-full bg-white text-[#06282f] hover:bg-white/90"
+                  nativeButton={false}
+                  render={<Link href="/doctors" />}
+                >
+                  <Search aria-hidden="true" />
+                  Find a doctor
+                </Button>
+              </div>
+            )}
+          </nav>
+        </>
       ) : null}
     </header>
   );

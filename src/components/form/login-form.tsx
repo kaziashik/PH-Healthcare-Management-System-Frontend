@@ -5,7 +5,7 @@ import { Eye, EyeClosed, House } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Logo from "@/assets/svg/Logo";
+import BrandMark from "@/components/layout/brand-mark";
 import { useContinueAfterAuth, useLogin } from "@/hooks/auth.hook";
 import { demoAccounts } from "@/lib/demo-accounts";
 import { apiErrorMessage } from "@/utils";
@@ -93,16 +93,7 @@ export default function LoginForm() {
   return (
     <div className="flex flex-col gap-5 text-white">
       <div className="flex flex-col items-center gap-3 text-center">
-        <div className="flex items-center gap-2">
-          <span className="flex size-11 items-center justify-center rounded-full bg-[#14b8a6]">
-            <span className="scale-[0.72]">
-              <Logo />
-            </span>
-          </span>
-          <span className="text-xl font-semibold text-[#5eead4]">
-            PH Healthcare
-          </span>
-        </div>
+        <BrandMark />
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Welcome back</h1>
           <p className="mt-2 text-sm text-slate-300">

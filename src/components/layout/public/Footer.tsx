@@ -2,7 +2,7 @@
 
 import { HeartPulse } from "lucide-react";
 import Link from "next/link";
-import Logo from "@/assets/svg/Logo";
+import BrandMark from "@/components/layout/brand-mark";
 import { useGetMe } from "@/hooks/auth.hook";
 
 const groups = [
@@ -73,13 +73,8 @@ export default function Footer() {
       </div>
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-4">
         <div>
-          <Link href="/" className="flex items-center gap-2 font-semibold text-white">
-            <span className="flex size-9 items-center justify-center overflow-hidden rounded-full bg-white/10">
-              <span className="scale-[0.72]">
-                <Logo id="footer" />
-              </span>
-            </span>
-            PH Healthcare
+          <Link href="/" className="text-white">
+            <BrandMark />
           </Link>
           <p className="mt-4 text-sm leading-6">
             Same-day visits with approved doctors. Pay the consultation fee

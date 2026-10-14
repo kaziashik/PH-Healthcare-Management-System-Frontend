@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import Logo from "@/assets/svg/Logo";
+import BrandMark from "@/components/layout/brand-mark";
 import ResetPasswordForm from "@/components/form/reset-password-form";
 
 export default function ResetPasswordPage() {
@@ -8,11 +8,8 @@ export default function ResetPasswordPage() {
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
-          <Link href="/" className="flex items-center gap-2 font-medium">
-            <div className="flex items-center gap-2">
-              <Logo />
-              <span>PH Healthcare</span>
-            </div>
+          <Link href="/">
+            <BrandMark />
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">

@@ -1,8 +1,8 @@
 "use client";
 
-import { Stethoscope } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import BrandMark from "@/components/layout/brand-mark";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import type { UserRole } from "@/types";
 import AccountMenu from "./account-menu";
@@ -28,11 +28,8 @@ export default function DashboardHeader({ role }: { role: UserRole }) {
   return (
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b border-white/10 bg-[#06282f] px-3 text-white sm:gap-4 sm:px-5">
       <SidebarTrigger className="text-white hover:bg-white/10 hover:text-white" />
-      <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-        <span className="flex size-9 items-center justify-center rounded-full bg-[#14b8a6] text-[#042028]">
-          <Stethoscope className="size-5" aria-hidden="true" />
-        </span>
-        <span className="hidden sm:inline">PH Healthcare</span>
+      <Link href="/" className="text-white">
+        <BrandMark wordmarkClassName="hidden sm:inline" />
       </Link>
       <nav className="mx-auto hidden items-center gap-0.5 md:flex">
         {links.map((link) => {

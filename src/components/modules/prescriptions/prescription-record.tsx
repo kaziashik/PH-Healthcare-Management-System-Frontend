@@ -8,6 +8,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import BrandMark from "@/components/layout/brand-mark";
 import { formatChosenVisit } from "@/lib/visit-time";
 import type { StoredPrescription } from "@/types/appointment.type";
 
@@ -46,8 +47,10 @@ export default function PrescriptionRecord({
         </SheetHeader>
         {prescription ? (
           <article className="mt-4 rounded-xl border bg-card p-4">
-            <p className="text-center text-lg font-semibold">PH Healthcare</p>
-            <p className="text-center text-xs tracking-wide text-muted-foreground uppercase">
+            <div className="flex justify-center">
+              <BrandMark />
+            </div>
+            <p className="mt-2 text-center text-xs tracking-wide text-muted-foreground uppercase">
               Prescription
             </p>
             <dl className="mt-4 grid gap-3 text-sm">

@@ -2,6 +2,7 @@
 
 import { Pill, Plus, Send, Trash2 } from "lucide-react";
 import { useState } from "react";
+import BrandMark from "@/components/layout/brand-mark";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -119,8 +120,10 @@ export default function PrescriptionForm({
     >
       <FieldGroup>
         <div className="rounded-xl border bg-card p-4 text-center">
-          <p className="text-lg font-semibold">PH Healthcare</p>
-          <p className="text-xs tracking-wide text-muted-foreground uppercase">
+          <div className="flex justify-center">
+            <BrandMark />
+          </div>
+          <p className="mt-2 text-xs tracking-wide text-muted-foreground uppercase">
             Prescription
           </p>
           <p className="mt-2 text-sm">
