@@ -151,19 +151,6 @@
   color: var(--card-foreground);
 }
 
-@keyframes clinic-slide {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.clinic-slide {
-  animation: clinic-slide 46s linear infinite;
-}
-
 @keyframes hero-ken {
   from {
     transform: scale(1);
@@ -223,7 +210,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .clinic-slide,
   .hero-ken,
   .rise-in,
   .icon-bob,
