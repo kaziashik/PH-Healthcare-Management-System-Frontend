@@ -25,12 +25,24 @@ export interface AppointmentPayment {
   refundedAt: string | null;
 }
 
+export interface StoredPrescription {
+  findings: string;
+  medicines: {
+    name: string;
+    dosage: string;
+    duration: string;
+    instructions?: string;
+  }[];
+  writtenAt: string;
+}
+
 export interface Appointment {
   id: string;
   status: AppointmentStatus;
   serialNumber: number | null;
   joiningTime: string | null;
   prescriptionUrl: string | null;
+  prescription?: StoredPrescription | null;
   createdAt: string;
   patient?: {
     id: string;

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import PrescriptionForm from "@/components/form/prescription-form";
+import PrescriptionRecord from "@/components/modules/prescriptions/prescription-record";
 import { doctorInitials } from "@/components/modules/doctors/doctor-card";
 import ListPager from "@/components/modules/list-pager";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ import {
   useGetDoctorAppointments,
   useUpdateAppointmentStatus,
 } from "@/hooks/appointment.hook";
+import { useGetMe } from "@/hooks/auth.hook";
 import { formatChosenVisit } from "@/lib/visit-time";
 import type { Appointment, AppointmentStatus } from "@/types/appointment.type";
 import { apiErrorMessage } from "@/utils";
@@ -131,12 +133,14 @@ export default function DoctorAppointmentsPanel() {
   const [prescriptionFor, setPrescriptionFor] = useState<Appointment | null>(
     null,
   );
+  const [historyFor, setHistoryFor] = useState<Appointment | null>(null);
   const { data, isPending, isError } = useGetDoctorAppointments({
     page,
     limit: 10,
     ...(status === "ALL" ? {} : { status }),
   });
   const updateStatus = useUpdateAppointmentStatus();
+  const doctorName = useGetMe().data?.data?.name ?? "Doctor";
   const appointments = data?.data ?? [];
 
   const moveVisit = (
@@ -150,9 +154,17 @@ export default function DoctorAppointmentsPanel() {
           toast.add({
             title:
               nextStatus === "ONGOING" ? "Visit started" : "Visit completed",
-            description: response.message,
+            description:
+              nextStatus === "COMPLETED"
+                ? "Write the prescription for this patient."
+                : response.message,
             type: "success",
           });
+          if (nextStatus === "COMPLETED") {
+            setStatus("COMPLETED");
+            setPage(1);
+            setPrescriptionFor({ ...appointment, status: "COMPLETED" });
+          }
         },
         onError: (error) => {
           toast.add({
@@ -343,18 +355,12 @@ export default function DoctorAppointmentsPanel() {
                               Write prescription
                             </Button>
                           ) : null}
-                          {appointment.prescriptionUrl ? (
+                          {appointment.prescription || appointment.prescriptionUrl ? (
                             <Button
+                              type="button"
                               size="sm"
                               variant="outline"
-                              nativeButton={false}
-                              render={
-                                <a
-                                  href={appointment.prescriptionUrl}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                />
-                              }
+                              onClick={() => setHistoryFor(appointment)}
                             >
                               <FileText aria-hidden="true" />
                               View prescription
@@ -396,11 +402,23 @@ export default function DoctorAppointmentsPanel() {
           {prescriptionFor ? (
             <PrescriptionForm
               appointmentId={prescriptionFor.id}
+              patientName={prescriptionFor.patient?.name ?? "the patient"}
               onDone={() => setPrescriptionFor(null)}
             />
           ) : null}
         </SheetContent>
       </Sheet>
+
+      <PrescriptionRecord
+        open={historyFor !== null}
+        patientName={historyFor?.patient?.name ?? "Patient"}
+        doctorName={doctorName}
+        specialty={historyFor?.doctor?.specialization}
+        visit={historyFor?.joiningTime}
+        prescription={historyFor?.prescription ?? null}
+        fileUrl={historyFor?.prescriptionUrl}
+        onClose={() => setHistoryFor(null)}
+      />
     </div>
   );
 }

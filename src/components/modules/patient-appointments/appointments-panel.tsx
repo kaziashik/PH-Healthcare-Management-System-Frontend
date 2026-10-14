@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import ListPager from "@/components/modules/list-pager";
+import PrescriptionRecord from "@/components/modules/prescriptions/prescription-record";
 import { doctorInitials } from "@/components/modules/doctors/doctor-card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -125,6 +126,7 @@ export default function PatientAppointmentsPanel() {
   });
   const cancelVisit = useCancelAppointment();
   const payVisit = usePayAppointment();
+  const [historyFor, setHistoryFor] = useState<Appointment | null>(null);
   const [cancelTarget, setCancelTarget] = useState<{
     appointmentId: string;
     paid: boolean;
@@ -289,19 +291,17 @@ export default function PatientAppointmentsPanel() {
                       </TableCell>
                       <TableCell className="text-right whitespace-normal">
                         <div className="flex flex-col items-end gap-2">
-                          {appointment.prescriptionUrl ? (
-                            <a
-                              className="inline-flex items-center gap-1.5 text-sm font-medium underline underline-offset-4"
-                              href={appointment.prescriptionUrl}
-                              target="_blank"
-                              rel="noreferrer"
+                          {appointment.prescription ||
+                          appointment.prescriptionUrl ? (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setHistoryFor(appointment)}
                             >
-                              <FileText
-                                className="size-3.5"
-                                aria-hidden="true"
-                              />
+                              <FileText aria-hidden="true" />
                               View prescription
-                            </a>
+                            </Button>
                           ) : null}
                           {appointment.status === "PENDING" ? (
                             <div className="flex flex-col items-end gap-1">
@@ -438,6 +438,17 @@ export default function PatientAppointmentsPanel() {
           </div>
         </div>
       ) : null}
+
+      <PrescriptionRecord
+        open={historyFor !== null}
+        patientName={historyFor?.patient?.name ?? "You"}
+        doctorName={historyFor?.doctor?.name ?? "Doctor"}
+        specialty={historyFor?.doctor?.specialization}
+        visit={historyFor?.joiningTime}
+        prescription={historyFor?.prescription ?? null}
+        fileUrl={historyFor?.prescriptionUrl}
+        onClose={() => setHistoryFor(null)}
+      />
     </div>
   );
 }

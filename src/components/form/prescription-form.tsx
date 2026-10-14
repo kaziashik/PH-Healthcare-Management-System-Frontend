@@ -1,5 +1,6 @@
 "use client";
 
+import { Pill, Plus, Send, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,9 +63,11 @@ function collectErrors(
 
 export default function PrescriptionForm({
   appointmentId,
+  patientName,
   onDone,
 }: {
   appointmentId: string;
+  patientName: string;
   onDone: () => void;
 }) {
   const { mutate, isPending } = useCreatePrescription();
@@ -115,6 +118,16 @@ export default function PrescriptionForm({
       }}
     >
       <FieldGroup>
+        <div className="rounded-xl border bg-card p-4 text-center">
+          <p className="text-lg font-semibold">PH Healthcare</p>
+          <p className="text-xs tracking-wide text-muted-foreground uppercase">
+            Prescription
+          </p>
+          <p className="mt-2 text-sm">
+            For <span className="font-medium">{patientName}</span>. This is
+            emailed to the patient and kept on the visit.
+          </p>
+        </div>
         <Field data-invalid={Boolean(formErrors.findings)}>
           <FieldLabel htmlFor="findings">Findings</FieldLabel>
           <Textarea
@@ -133,9 +146,13 @@ export default function PrescriptionForm({
 
         {medicines.map((medicine, index) => (
           <div key={medicine.id} className="panel grid gap-3 p-4">
+            <p className="flex items-center gap-2 text-sm font-medium">
+              <Pill className="size-4 text-primary" aria-hidden="true" />
+              Medicine {index + 1}
+            </p>
             <Field data-invalid={Boolean(formErrors.medicines[index]?.name)}>
               <FieldLabel htmlFor={`medicine-name-${index}`}>
-                Medicine
+                Name
               </FieldLabel>
               <Input
                 id={`medicine-name-${index}`}
@@ -265,6 +282,7 @@ export default function PrescriptionForm({
                   }));
                 }}
               >
+                <Trash2 aria-hidden="true" />
                 Remove medicine
               </Button>
             ) : null}
@@ -282,16 +300,20 @@ export default function PrescriptionForm({
             }));
           }}
         >
+          <Plus aria-hidden="true" />
           Add medicine
         </Button>
 
         <Button disabled={isPending} type="submit">
           {isPending ? (
             <>
-              <Spinner /> Saving
+              <Spinner /> Sending
             </>
           ) : (
-            "Save prescription"
+            <>
+              <Send aria-hidden="true" />
+              Send prescription
+            </>
           )}
         </Button>
       </FieldGroup>
