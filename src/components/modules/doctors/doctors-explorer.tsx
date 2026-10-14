@@ -1,7 +1,16 @@
 "use client";
 
+import {
+  ArrowUpDown,
+  Banknote,
+  Briefcase,
+  Search,
+  SlidersHorizontal,
+  Stethoscope,
+  type LucideIcon,
+} from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import ListPager from "@/components/modules/list-pager";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +19,31 @@ import type { DoctorParams } from "@/types";
 import DoctorCard, { DoctorCardSkeleton } from "./doctor-card";
 
 const pageSize = 12;
+
+function FilterField({
+  id,
+  label,
+  icon: Icon,
+  children,
+}: {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label
+        className="flex items-center gap-1.5 text-sm font-medium"
+        htmlFor={id}
+      >
+        <Icon className="size-3.5 text-primary" aria-hidden="true" />
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
 
 const sorts: {
   label: string;
@@ -69,30 +103,55 @@ export default function DoctorsExplorer() {
   return (
     <div className="flex flex-col gap-6">
       <form
-        className="panel flex flex-col gap-4 p-4 sm:p-5"
+        className="panel flex flex-col"
         onSubmit={(event) => {
           event.preventDefault();
           setPage(1);
           setSearchTerm(draft.trim());
         }}
       >
-        <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium" htmlFor="doctor-search">
-            Search
-          </label>
+        <div className="flex flex-col gap-4 p-4 sm:p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                <SlidersHorizontal className="size-4" aria-hidden="true" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold">Search the roster</p>
+                <p className="text-xs text-muted-foreground">
+                  Name, specialty, fee, or years of experience
+                </p>
+              </div>
+            </div>
+            <p className="shrink-0 pt-1 text-sm font-medium text-muted-foreground">
+              {isPending
+                ? "Loading…"
+                : `${total ?? 0} ${total === 1 ? "doctor" : "doctors"}`}
+            </p>
+          </div>
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Input
-              id="doctor-search"
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              placeholder="Doctor name or specialty"
-              className="sm:flex-1"
-            />
-            <div className="flex gap-2">
-              <Button type="submit">Search</Button>
+            <div className="relative sm:flex-1">
+              <Search
+                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden="true"
+              />
+              <Input
+                id="doctor-search"
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                placeholder="Doctor name or specialty"
+                aria-label="Search doctors"
+                className="h-10 pl-9"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:flex">
+              <Button type="submit" className="h-10">
+                Search
+              </Button>
               <Button
                 type="button"
                 variant="outline"
+                className="h-10"
                 onClick={() => {
                   setDraft("");
                   setSearchTerm("");
@@ -108,14 +167,11 @@ export default function DoctorsExplorer() {
             </div>
           </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium" htmlFor="doctor-specialty">
-              Specialty
-            </label>
+        <div className="grid gap-3 border-t bg-muted/40 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4">
+          <FilterField id="doctor-specialty" label="Specialty" icon={Stethoscope}>
             <select
               id="doctor-specialty"
-              className="select-control"
+              className="select-control h-10"
               value={specialization}
               onChange={(event) => {
                 setSpecialization(event.target.value);
@@ -129,11 +185,8 @@ export default function DoctorsExplorer() {
                 </option>
               ))}
             </select>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium" htmlFor="doctor-fee">
-              Highest fee (BDT)
-            </label>
+          </FilterField>
+          <FilterField id="doctor-fee" label="Highest fee (BDT)" icon={Banknote}>
             <Input
               id="doctor-fee"
               inputMode="numeric"
@@ -143,12 +196,14 @@ export default function DoctorsExplorer() {
                 setPage(1);
               }}
               placeholder="No limit"
+              className="h-10"
             />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium" htmlFor="doctor-experience">
-              Minimum experience
-            </label>
+          </FilterField>
+          <FilterField
+            id="doctor-experience"
+            label="Minimum experience"
+            icon={Briefcase}
+          >
             <Input
               id="doctor-experience"
               inputMode="numeric"
@@ -158,15 +213,13 @@ export default function DoctorsExplorer() {
                 setPage(1);
               }}
               placeholder="Any years"
+              className="h-10"
             />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium" htmlFor="doctor-sort">
-              Sort
-            </label>
+          </FilterField>
+          <FilterField id="doctor-sort" label="Sort" icon={ArrowUpDown}>
             <select
               id="doctor-sort"
-              className="select-control"
+              className="select-control h-10"
               value={sortIndex}
               onChange={(event) => {
                 setSortIndex(Number(event.target.value));
@@ -179,14 +232,9 @@ export default function DoctorsExplorer() {
                 </option>
               ))}
             </select>
-          </div>
+          </FilterField>
         </div>
       </form>
-      <p className="text-sm text-muted-foreground">
-        {isPending
-          ? "Loading doctors…"
-          : `${total ?? 0} ${total === 1 ? "doctor" : "doctors"}`}
-      </p>
 
       {isPending ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

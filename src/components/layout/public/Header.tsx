@@ -160,7 +160,7 @@ export default function Header() {
         </nav>
 
         <div className="hidden shrink-0 items-center gap-2 min-[1100px]:flex">
-          <ThemeToggle className={barButton} />
+          <ThemeToggle className={`size-10 ${barButton}`} />
           {isLoading ? null : user && role ? (
             <AccountPill
               name={user.name}
@@ -170,6 +170,14 @@ export default function Header() {
             />
           ) : (
             <>
+              <Button
+                className="h-10 rounded-full bg-white px-4 text-[#06282f] hover:bg-white/90"
+                nativeButton={false}
+                render={<Link href="/doctors" />}
+              >
+                <Search aria-hidden="true" />
+                Find a doctor
+              </Button>
               <Button
                 variant="outline"
                 className={outlinePill}
@@ -188,14 +196,6 @@ export default function Header() {
                 <UserPlus aria-hidden="true" />
                 Sign up
               </Button>
-              <Button
-                className="h-10 rounded-full bg-white px-4 text-[#06282f] hover:bg-white/90"
-                nativeButton={false}
-                render={<Link href="/doctors" />}
-              >
-                <Search aria-hidden="true" />
-                Find a doctor
-              </Button>
             </>
           )}
         </div>
@@ -209,7 +209,7 @@ export default function Header() {
               onLogout={handleLogout}
             />
           ) : null}
-          <ThemeToggle className={barButton} />
+          <ThemeToggle className={`size-10 ${barButton}`} />
           <Button
             type="button"
             variant="outline"
@@ -281,6 +281,14 @@ export default function Header() {
             ) : (
               <div className="mt-3 grid gap-2">
                 <Button
+                  className="h-10 w-full rounded-full bg-white text-[#06282f] hover:bg-white/90"
+                  nativeButton={false}
+                  render={<Link href="/doctors" />}
+                >
+                  <Search aria-hidden="true" />
+                  Find a doctor
+                </Button>
+                <Button
                   variant="outline"
                   className={`${outlinePill} w-full`}
                   nativeButton={false}
@@ -297,14 +305,6 @@ export default function Header() {
                 >
                   <UserPlus aria-hidden="true" />
                   Sign up
-                </Button>
-                <Button
-                  className="h-10 w-full rounded-full bg-white text-[#06282f] hover:bg-white/90"
-                  nativeButton={false}
-                  render={<Link href="/doctors" />}
-                >
-                  <Search aria-hidden="true" />
-                  Find a doctor
                 </Button>
               </div>
             )}
