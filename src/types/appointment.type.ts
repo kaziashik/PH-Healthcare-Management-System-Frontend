@@ -37,6 +37,7 @@ export interface Appointment {
     name: string;
     email?: string;
     contactNumber?: string | null;
+    user?: { imageUrl?: string | null } | null;
   };
   doctor?: {
     id: string;
