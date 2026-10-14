@@ -1,16 +1,8 @@
 "use client";
 
-import {
-  ArrowUpDown,
-  Banknote,
-  Briefcase,
-  Search,
-  SlidersHorizontal,
-  Stethoscope,
-  type LucideIcon,
-} from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import ListPager from "@/components/modules/list-pager";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,30 +12,8 @@ import DoctorCard, { DoctorCardSkeleton } from "./doctor-card";
 
 const pageSize = 12;
 
-function FilterField({
-  id,
-  label,
-  icon: Icon,
-  children,
-}: {
-  id: string;
-  label: string;
-  icon: LucideIcon;
-  children: ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label
-        className="flex items-center gap-1.5 text-sm font-medium"
-        htmlFor={id}
-      >
-        <Icon className="size-3.5 text-primary" aria-hidden="true" />
-        {label}
-      </label>
-      {children}
-    </div>
-  );
-}
+const pill =
+  "h-11 rounded-full border border-border bg-card text-sm text-foreground shadow-none outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/40";
 
 const sorts: {
   label: string;
@@ -82,6 +52,16 @@ export default function DoctorsExplorer() {
         .filter(Boolean),
     ),
   ];
+  useEffect(() => {
+    const next = draft.trim();
+    if (next === searchTerm) return;
+    const timer = window.setTimeout(() => {
+      setSearchTerm(next);
+      setPage(1);
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [draft, searchTerm]);
+
   const sort = sorts[sortIndex] ?? sorts[0];
   const parsedFee = Number(maxFee);
   const parsedExperience = Number(minExperience);
@@ -99,79 +79,52 @@ export default function DoctorsExplorer() {
   const doctors = data?.data ?? [];
 
   const total = data?.meta?.total;
+  const filtered =
+    draft.trim() !== "" ||
+    specialization !== "" ||
+    maxFee !== "" ||
+    minExperience !== "" ||
+    sortIndex !== 0;
+
+  const clearFilters = () => {
+    setDraft("");
+    setSearchTerm("");
+    setSpecialization("");
+    setMaxFee("");
+    setMinExperience("");
+    setSortIndex(0);
+    setPage(1);
+  };
 
   return (
     <div className="flex flex-col gap-6">
       <form
-        className="panel flex flex-col"
         onSubmit={(event) => {
           event.preventDefault();
-          setPage(1);
           setSearchTerm(draft.trim());
+          setPage(1);
         }}
       >
-        <div className="flex flex-col gap-4 p-4 sm:p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
-                <SlidersHorizontal className="size-4" aria-hidden="true" />
-              </span>
-              <div>
-                <p className="text-sm font-semibold">Search the roster</p>
-                <p className="text-xs text-muted-foreground">
-                  Name, specialty, fee, or years of experience
-                </p>
-              </div>
-            </div>
-            <p className="shrink-0 pt-1 text-sm font-medium text-muted-foreground">
-              {isPending
-                ? "Loading…"
-                : `${total ?? 0} ${total === 1 ? "doctor" : "doctors"}`}
-            </p>
+        <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:items-center">
+          <div className="relative col-span-2 min-w-0 md:flex-1">
+            <Search
+              className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <Input
+              id="doctor-search"
+              value={draft}
+              onChange={(event) => setDraft(event.target.value)}
+              placeholder="Search doctor..."
+              aria-label="Search doctors"
+              className={`${pill} w-full pr-4 pl-11`}
+            />
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <div className="relative sm:flex-1">
-              <Search
-                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-                aria-hidden="true"
-              />
-              <Input
-                id="doctor-search"
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
-                placeholder="Doctor name or specialty"
-                aria-label="Search doctors"
-                className="h-10 pl-9"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-2 sm:flex">
-              <Button type="submit" className="h-10">
-                Search
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="h-10"
-                onClick={() => {
-                  setDraft("");
-                  setSearchTerm("");
-                  setSpecialization("");
-                  setMaxFee("");
-                  setMinExperience("");
-                  setSortIndex(0);
-                  setPage(1);
-                }}
-              >
-                Clear
-              </Button>
-            </div>
-          </div>
-        </div>
-        <div className="grid gap-3 border-t bg-muted/40 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4">
-          <FilterField id="doctor-specialty" label="Specialty" icon={Stethoscope}>
+          <div className="relative col-span-2 sm:col-span-1 md:w-48">
             <select
               id="doctor-specialty"
-              className="select-control h-10"
+              aria-label="Specialty"
+              className={`${pill} w-full appearance-none pr-10 pl-4`}
               value={specialization}
               onChange={(event) => {
                 setSpecialization(event.target.value);
@@ -185,41 +138,40 @@ export default function DoctorsExplorer() {
                 </option>
               ))}
             </select>
-          </FilterField>
-          <FilterField id="doctor-fee" label="Highest fee (BDT)" icon={Banknote}>
-            <Input
-              id="doctor-fee"
-              inputMode="numeric"
-              value={maxFee}
-              onChange={(event) => {
-                setMaxFee(event.target.value);
-                setPage(1);
-              }}
-              placeholder="No limit"
-              className="h-10"
+            <ChevronDown
+              className="pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
             />
-          </FilterField>
-          <FilterField
+          </div>
+          <Input
             id="doctor-experience"
-            label="Minimum experience"
-            icon={Briefcase}
-          >
-            <Input
-              id="doctor-experience"
-              inputMode="numeric"
-              value={minExperience}
-              onChange={(event) => {
-                setMinExperience(event.target.value);
-                setPage(1);
-              }}
-              placeholder="Any years"
-              className="h-10"
-            />
-          </FilterField>
-          <FilterField id="doctor-sort" label="Sort" icon={ArrowUpDown}>
+            inputMode="numeric"
+            value={minExperience}
+            onChange={(event) => {
+              setMinExperience(event.target.value);
+              setPage(1);
+            }}
+            placeholder="Min"
+            aria-label="Minimum years of experience"
+            className={`${pill} w-full px-4 md:w-24`}
+          />
+          <Input
+            id="doctor-fee"
+            inputMode="numeric"
+            value={maxFee}
+            onChange={(event) => {
+              setMaxFee(event.target.value);
+              setPage(1);
+            }}
+            placeholder="Max"
+            aria-label="Highest fee in BDT"
+            className={`${pill} w-full px-4 md:w-24`}
+          />
+          <div className="relative col-span-2 sm:col-span-1 md:w-44">
             <select
               id="doctor-sort"
-              className="select-control h-10"
+              aria-label="Sort"
+              className={`${pill} w-full appearance-none pr-10 pl-4`}
               value={sortIndex}
               onChange={(event) => {
                 setSortIndex(Number(event.target.value));
@@ -232,8 +184,27 @@ export default function DoctorsExplorer() {
                 </option>
               ))}
             </select>
-          </FilterField>
+            <ChevronDown
+              className="pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
+            />
+          </div>
+          {filtered ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="col-span-2 h-11 rounded-full sm:col-span-1"
+              onClick={clearFilters}
+            >
+              Clear
+            </Button>
+          ) : null}
         </div>
+        <p className="mt-3 text-sm text-muted-foreground">
+          {isPending
+            ? "Loading doctors…"
+            : `${total ?? 0} ${total === 1 ? "doctor" : "doctors"}`}
+        </p>
       </form>
 
       {isPending ? (
