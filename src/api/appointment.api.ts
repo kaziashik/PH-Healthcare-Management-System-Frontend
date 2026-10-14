@@ -68,6 +68,12 @@ export function createPrescription(payload: CreatePrescriptionPayload) {
   );
 }
 
+export function getPaymentSummary() {
+  return apiClient<
+    ApiResponse<{ paidAmount: number; paidCount: number; currency: string }>
+  >("/payment/summary");
+}
+
 export function getMyPayments(params: PaymentListParams) {
   return apiClient<ApiResponse<PaymentRecord[]>>("/payment/my-payments", {
     params,

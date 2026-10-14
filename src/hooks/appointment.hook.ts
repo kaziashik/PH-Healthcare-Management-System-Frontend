@@ -6,6 +6,7 @@ import {
   getDoctorAppointments,
   getMyAppointments,
   getMyPayments,
+  getPaymentSummary,
   payAppointment,
   updateAppointmentStatus,
 } from "@/api/appointment.api";
@@ -31,6 +32,13 @@ export function useGetMyAppointments(
     queryKey: ["patient-appointments", params],
     queryFn: () => getMyAppointments(params),
     enabled,
+  });
+}
+
+export function useGetPaymentSummary() {
+  return useQuery({
+    queryKey: ["payment-summary"],
+    queryFn: getPaymentSummary,
   });
 }
 

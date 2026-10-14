@@ -4,9 +4,9 @@ export default function AdminDashboard() {
   return (
     <section>
       <div className="mb-5">
-        <h1 className="text-2xl font-bold tracking-tight">Overview</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Admin Dashboard</h1>
         <p className="text-sm text-muted-foreground">
-          Review new doctors, and manage patient and admin accounts.
+          Clinic overview — jump into the queues that need action.
         </p>
       </div>
       <AdminOverview />
