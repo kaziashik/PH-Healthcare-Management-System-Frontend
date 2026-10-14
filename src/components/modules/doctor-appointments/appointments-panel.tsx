@@ -47,13 +47,13 @@ import { formatChosenVisit } from "@/lib/visit-time";
 import type { Appointment, AppointmentStatus } from "@/types/appointment.type";
 import { apiErrorMessage } from "@/utils";
 
-const filters: ("ALL" | AppointmentStatus)[] = [
+const filters = [
   "BOOKED",
   "ONGOING",
   "COMPLETED",
   "CANCELLED",
   "ALL",
-];
+] as const;
 
 const filterIcon: Record<(typeof filters)[number], LucideIcon> = {
   BOOKED: CalendarCheck,

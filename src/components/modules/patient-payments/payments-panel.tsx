@@ -133,9 +133,12 @@ export default function PaymentsPanel() {
   const openReceipt = async (payment: PaymentRecord) => {
     setOpeningId(payment.id);
     try {
-      const blob = await apiClient<Blob>(`/payment/${payment.id}/receipt`, {
-        responseType: "blob",
-      });
+      const blob = await apiClient<Blob, "blob">(
+        `/payment/${payment.id}/receipt`,
+        {
+          responseType: "blob",
+        },
+      );
       const url = URL.createObjectURL(blob);
       setReceipt((current) => {
         if (current) URL.revokeObjectURL(current.url);

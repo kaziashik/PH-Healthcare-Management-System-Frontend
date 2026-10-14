@@ -71,7 +71,7 @@ function isCurrent(pathname: string, url: string) {
 export default function Header() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const { data, isLoading } = useGetMe();
+  const { data } = useGetMe();
   const { mutate: logout } = useLogout();
   const queryClient = useQueryClient();
   const user = data?.data;
@@ -161,7 +161,7 @@ export default function Header() {
 
         <div className="hidden shrink-0 items-center gap-2 min-[1100px]:flex">
           <ThemeToggle className={`size-10 ${barButton}`} />
-          {isLoading ? null : user && role ? (
+          {user && role ? (
             <AccountPill
               name={user.name}
               email={user.email}
