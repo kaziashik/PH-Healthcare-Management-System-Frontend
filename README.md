@@ -1,6 +1,7 @@
 # PH Healthcare — Frontend
 
-
+[![Live Site](https://img.shields.io/badge/Live-ph--healthcare--six.vercel.app-4c8bf5)](https://ph-healthcare-six.vercel.app)
+[![Backend API](https://img.shields.io/badge/API-ph--healthcare--api.vercel.app-6cc644)](https://ph-healthcare-api.vercel.app)
 
 
 ---
@@ -28,14 +29,8 @@ The admin checks every doctor application, including the resume, certificate, an
 
 I built it as two separate applications. The frontend uses Next.js and TypeScript, and the backend uses Express with Prisma and PostgreSQL. Authentication uses JWT with role-based access, and I also used Redis and node-cron for background tasks.
 
-[![Live Site](https://img.shields.io/badge/Live-ph--healthcare--six.vercel.app-4c8bf5)](https://ph-healthcare-six.vercel.app)
-[![Backend API](https://img.shields.io/badge/API-ph--healthcare--api.vercel.app-6cc644)](https://ph-healthcare-api.vercel.app)
 
-PH Healthcare connects patients with approved doctors. A visitor can look through the directory. A **patient** books today's open schedule and pays with bKash. A **doctor** publishes hours and writes the prescription after the visit. An **admin** or **super admin** approves doctors and manages accounts.
 
-Roles: `PATIENT`, `DOCTOR`, `ADMIN`, `SUPER_ADMIN`.
-
-Patients register on the site, with email and password or with Google. Doctors apply and wait for approval. Admins and super admins cannot self-register.
 
 ## 1. One-look system flow
 
