@@ -1,6 +1,14 @@
 # PH Healthcare — Frontend
 
-# PH Healthcare
+
+
+
+---
+
+# PH Healthcare — Full workflow
+
+![PH Healthcare presentation poster](presentation-poster.png)
+
 
 PH Healthcare is a doctor appointment booking website built around verified doctors. The website has four roles: **patient**, **doctor**, **admin**, and **super admin**.
 
@@ -22,12 +30,6 @@ I built it as two separate applications. The frontend uses Next.js and TypeScrip
 
 [![Live Site](https://img.shields.io/badge/Live-ph--healthcare--six.vercel.app-4c8bf5)](https://ph-healthcare-six.vercel.app)
 [![Backend API](https://img.shields.io/badge/API-ph--healthcare--api.vercel.app-6cc644)](https://ph-healthcare-api.vercel.app)
-
----
-
-# PH Healthcare — Full workflow
-
-![PH Healthcare presentation poster](presentation-poster.png)
 
 PH Healthcare connects patients with approved doctors. A visitor can look through the directory. A **patient** books today's open schedule and pays with bKash. A **doctor** publishes hours and writes the prescription after the visit. An **admin** or **super admin** approves doctors and manages accounts.
 
