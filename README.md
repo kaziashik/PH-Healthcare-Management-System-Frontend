@@ -11,6 +11,8 @@
 ![PH Healthcare presentation poster](presentation-poster.png)
 
 
+# PH Healthcare
+
 PH Healthcare is a doctor appointment booking website built around verified doctors. The website has four roles: **patient**, **doctor**, **admin**, and **super admin**.
 
 ## 1. Patient
@@ -27,7 +29,10 @@ The admin checks every doctor application, including the resume, certificate, an
 
 ## Technology
 
-I built it as two separate applications. The frontend uses Next.js and TypeScript, and the backend uses Express with Prisma and PostgreSQL. Authentication uses JWT with role-based access, and I also used Redis and node-cron for background tasks.
+I built it as two separate applications.
+
+- **Frontend:** Next.js 16, React 19, and TypeScript, with Tailwind CSS and shadcn/ui for the interface, TanStack Query for data fetching, and TanStack Form with Zod for form validation. It also includes Google Sign-In, email OTP verification, and PDF preview for doctors' resumes and certificates.
+- **Backend:** Express with Prisma and PostgreSQL, JWT authentication with role-based access, and Redis and node-cron for background tasks.
 
 
 
