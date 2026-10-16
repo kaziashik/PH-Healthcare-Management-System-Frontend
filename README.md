@@ -1,6 +1,24 @@
 # PH Healthcare — Frontend
 
-A clinic website for same-day doctor visits. A patient finds an approved doctor, books an open schedule, pays the consultation fee with bKash, and joins at a 20-minute serial. The doctor runs the visit and writes a prescription. Admins and super admins approve doctors and manage accounts.
+# PH Healthcare
+
+PH Healthcare is a doctor appointment booking website built around verified doctors. The website has four roles: **patient**, **doctor**, **admin**, and **super admin**.
+
+## 1. Patient
+
+Patients can search for a specific doctor by name, specialty, and fee, choose one they like, book an available time slot, and pay the consultation fee with Stripe or bKash. Right after payment, they receive a payment receipt and a Google Meet link by email, and they use that link to meet the doctor at the time they booked. After the visit, the patient receives the prescription by email and can also view it in their account on the website.
+
+## 2. Doctor
+
+Doctors apply on the website with their resume, certificate, and experience. Once the admin checks the application and approves the doctor, the doctor receives an email saying they were approved, along with their login details. The doctor then signs in and creates their available schedule, so patients can book it. After the visit, the doctor records findings and medicines and submits the prescription.
+
+## 3. Admin and Super Admin
+
+The admin checks every doctor application, including the resume, certificate, and experience. If everything is correct, the admin approves the doctor, and only then can the doctor appear on the website and create a schedule. If anything is wrong, the admin can reject the application or block a patient or doctor. The admin can also see all reviews, payment stats, and analytics with graphs and reports. The super admin has the same powers and can also create, block, and unblock admin accounts.
+
+## Technology
+
+I built it as two separate applications. The frontend uses Next.js and TypeScript, and the backend uses Express with Prisma and PostgreSQL. Authentication uses JWT with role-based access, and I also used Redis and node-cron for background tasks.
 
 [![Live Site](https://img.shields.io/badge/Live-ph--healthcare--six.vercel.app-4c8bf5)](https://ph-healthcare-six.vercel.app)
 [![Backend API](https://img.shields.io/badge/API-ph--healthcare--api.vercel.app-6cc644)](https://ph-healthcare-api.vercel.app)
