@@ -93,6 +93,98 @@ sequenceDiagram
     Note over A,API: Admin or super admin approves the doctor before any of this is public
 ```
 
+
+# ER diagram
+
+```mermaid
+erDiagram
+    users ||--o| patients : "has"
+    users ||--o| doctors : "has"
+    users ||--o| admins : "has"
+    doctors ||--o{ schedules : "publishes"
+    patients ||--o{ appointments : "books"
+    doctors ||--o{ appointments : "sees"
+    schedules ||--o{ appointments : "holds"
+    appointments ||--o| payments : "paid by"
+
+    users {
+        uuid id PK
+        text name
+        text email UK
+        text password
+        text googleId UK
+        enum authProvider
+        boolean emailVerified
+        enum role
+        enum status
+        text imageUrl
+        text image_PublicId
+    }
+
+    patients {
+        uuid id PK
+        text name
+        text email UK
+        text contactNumber
+        enum gender
+        uuid userId FK
+    }
+
+    doctors {
+        uuid id PK
+        text name
+        text email UK
+        text specialization
+        text licenseNumber UK
+        int experienceYears
+        decimal consultationFee
+        enum verificationStatus
+        uuid userId FK
+    }
+
+    admins {
+        uuid id PK
+        text name
+        text organizationEmail UK
+        text personalEmail
+        uuid userId FK
+    }
+
+    schedules {
+        uuid id PK
+        timestamp startDateTime
+        timestamp endDateTime
+        int totalSlots
+        int availableSlots
+        text meetingLink
+        enum status
+        uuid doctorId FK
+    }
+
+    appointments {
+        uuid id PK
+        enum status
+        timestamp joiningTime
+        int serialNumber
+        json prescription
+        text prescriptionUrl
+        uuid patientId FK
+        uuid doctorId FK
+        uuid scheduleId FK
+    }
+
+    payments {
+        uuid id PK
+        enum status
+        decimal amount
+        text currency
+        text paymentGateway
+        text merchantInvoiceNumber UK
+        text bkashPaymentId UK
+        uuid appointmentId FK
+    }
+```
+
 ## 3. Appointment status
 
 Payment creates the visit as `PENDING`. It becomes `BOOKED` only after bKash succeeds. `CANCELLED` does not move again.
