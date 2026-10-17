@@ -5,6 +5,16 @@ A clinic website for same-day doctor visits. A patient finds an approved doctor,
 [![Live Site](https://img.shields.io/badge/Live-ph--healthcare--six.vercel.app-4c8bf5)](https://ph-healthcare-six.vercel.app)
 [![Backend API](https://img.shields.io/badge/API-ph--healthcare--api.vercel.app-6cc644)](https://ph-healthcare-api.vercel.app)
 
+| Resource | Link |
+|---|---|
+| **Live Frontend** | [https://ph-healthcare-six.vercel.app](https://ph-healthcare-six.vercel.app) |
+| **Backend API** | [https://ph-healthcare-api.vercel.app](https://ph-healthcare-api.vercel.app) |
+| **Frontend Code** | [github.com/kaziashik/PH-Healthcare-Management-System-Frontend](https://github.com/kaziashik/PH-Healthcare-Management-System-Frontend) |
+| **Backend Code** | [github.com/kaziashik/PH-Healthcare-Backend](https://github.com/kaziashik/PH-Healthcare-Backend) |
+| **API Documentation** | [`resources/docs/PH_Healthcare_API_Design_Documentation.md`](./resources/docs/PH_Healthcare_API_Design_Documentation.md) |
+| **Postman Collection** | [`resources/postman/PH Healthcare API.postman_collection.json`](./resources/postman/PH%20Healthcare%20API.postman_collection.json) |
+| **Database Diagram (drawSQL)** | [drawsql.app/teams/kazi-ashikur/diagrams/ph-healthcare-system-erd](https://drawsql.app/teams/kazi-ashikur/diagrams/ph-healthcare-system-erd) |
+
 ---
 
 # PH Healthcare — Full workflow
